@@ -13,7 +13,7 @@ VSpinup = VEllipse + VCircular # should be able to add potentials
 
 
 sequence = Sequential(system)
-
+# should be able to load a wavefunction
 sequence.add(Evolve(potential=VHarmonic, dt=0, idt=1e-3, steps=1e3, show=True, save=False, frame='lab'))
 sequence.add(Evolve(potential=VSpinup, dt=1e3, idt=0, steps=1e5, show=True, save=True
                         frame='rotating', Omega=TimeDependent('tanh', max=0.97, ramptime=1e5) ))
