@@ -155,7 +155,7 @@ int initGL() {
   glutKeyboardFunc(keyboard);
   glutCloseFunc(cleanup);
   glewInit();
-
+  
   if (!glewIsSupported("GL_ARB_pixel_buffer_object")) {
     fprintf(stderr, "ERROR: Support for necessary OpenGL extensions missing.");
     fflush(stderr);
@@ -225,9 +225,4 @@ double fft2d(int speed, int print) {
   printf("%i\n\n", glutGetWindow());
 
   return out;
-}
-
-void getwindow(void)
-{
-  printf("%i\n\n", glutGetWindow());
 }

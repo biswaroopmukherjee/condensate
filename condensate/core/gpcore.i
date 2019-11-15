@@ -7,4 +7,3 @@
 %}
 
 double fft2d(int speed, int print);
-void getwindow(void);

@@ -15,6 +15,5 @@ void delete_texture(void);
 void update_texture(float2 *data, size_t w, size_t h, size_t pitch);
 void kernelLauncher(uchar4 *d_out, float2 *devPsi, int w, int h);
 void multKernel(float2 *devPsi, float mult, int w, int h);
-void getwindow(void);
 #endif
 
