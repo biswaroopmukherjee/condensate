@@ -27,9 +27,16 @@ cuda_add_library(gpcoregpu
     gpcore.hpp
     gpcore.cpp
 
-    helper_timer.h
+    initialize.hpp
+    initialize.cpp
+
+    render.hpp
+    render.cpp
+
+    helper_cudagl.h
     gp_kernels.h
     gp_kernels.cu
+
 )
 cuda_add_cufft_to_target(gpcoregpu)
 

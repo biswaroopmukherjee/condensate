@@ -9,9 +9,9 @@
  *
  */
 
-// Helper Timing Functions
-#ifndef HELPER_TIMER_H
-#define HELPER_TIMER_H
+// Helper CUDAGL
+#ifndef HELPER_CUDAGL_H
+#define HELPER_CUDAGL_H
 
 #ifndef EXIT_WAIVED
 #define EXIT_WAIVED 2
@@ -19,6 +19,22 @@
 
 // includes, system
 #include <vector>
+
+#include <cuda_runtime.h>
+#include <cufft.h>
+
+// CUDA error checkers
+#define checkCudaErrors(ans) { _checkCudaErrors((ans), __FILE__, __LINE__); }
+inline void _checkCudaErrors(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      printf("Error: %s:%d, ", file, line);
+      printf("code:%d, reason: %s\n", code, cudaGetErrorString(code));
+      if (abort) exit(code);
+   }
+}
+
 
 // Definition of the StopWatch Interface, this is used if we don't want to use the CUT functions
 // But rather in a self contained class interface

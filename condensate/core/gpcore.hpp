@@ -2,6 +2,7 @@
 #define GPCORE_HPP
 
 
-double fft2d(int speed, int print);
+
+void evolve(int sizex, int sizey, cuDoubleComplex *arr);
 
 #endif
