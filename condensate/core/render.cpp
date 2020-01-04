@@ -15,10 +15,9 @@
 
 #include "gpcore.hpp"
 #include "defines.h"
-#include "gp_kernels.h"
 #include "helper_cudagl.h"
 #include "render.hpp"
-#include "initialize.hpp"
+#include "wavefunction.hpp"
 
 
 namespace render {
@@ -46,7 +45,7 @@ namespace render {
         uchar4 *d_out = 0;
         cudaGraphicsMapResources(1, &cuda_pbo_resource, 0);
         cudaGraphicsResourceGetMappedPointer((void **)&d_out, NULL, cuda_pbo_resource);
-        kernelLauncher(d_out, gpcore::devPsi, DIM, DIM);
+        gpcore::Psi.MapColors(d_out);
         cudaGraphicsUnmapResources(1, &cuda_pbo_resource, 0);
         }
 
@@ -109,11 +108,7 @@ namespace render {
             glDeleteTextures(1, &tex);
         }
         // Free all host and device resources
-        free(gpcore::hostPsi);
-        checkCudaErrors(cudaFree(gpcore::devPsi));
-        checkCudaErrors(cudaFree(gpcore::hostV));
         sdkDeleteTimer(&timer);
-        checkCudaErrors(cudaDeviceReset());
 
     }
 

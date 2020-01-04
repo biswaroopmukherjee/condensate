@@ -15,12 +15,16 @@
 
 #include "gpcore.hpp"
 #include "render.hpp"
-#include "initialize.hpp"
+#include "wavefunction.hpp"
 #include "defines.h"
 #include "gp_kernels.h"
 #include "helper_cudagl.h"
 
-
+namespace gpcore {
+  Wavefunction Psi;
+  int wWidth = std::max(512, DIM);
+  int wHeight = std::max(512, DIM);
+}
 
 void evolve(int sizex, int sizey, cuDoubleComplex *arr) {
   int speed = 6000;
@@ -31,20 +35,19 @@ void evolve(int sizex, int sizey, cuDoubleComplex *arr) {
   render::startOpenGL();
 
   // // Create Wavefunction
-  gpcore::initializecpy(arr);
+  gpcore::Psi.Initialize(arr);
+
 
   for( int a = 0; a < 200; a++ ) {
       double mult = exp(-(double)a / speed);
-      multKernel(gpcore::devPsi, mult, DIM, DIM); 
+      gpcore::Psi.Step(mult); 
       if (a % print == 0){
         glutMainLoopEvent();
       }
    }
 
-  checkCudaErrors(cudaMemcpy(gpcore::hostPsi, gpcore::devPsi, sizeof(cuDoubleComplex) * DS, cudaMemcpyDeviceToHost));
-
-  memcpy(arr, gpcore::hostPsi, sizeof(cuDoubleComplex) * DS);
-
+  gpcore::Psi.ExportToVariable(arr);
+  gpcore::Psi.Cleanup();
   render::cleanup();
 
   printf("\n Done \n\n");

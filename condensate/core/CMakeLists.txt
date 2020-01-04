@@ -27,8 +27,8 @@ cuda_add_library(gpcoregpu
     gpcore.hpp
     gpcore.cpp
 
-    initialize.hpp
-    initialize.cpp
+    wavefunction.hpp
+    wavefunction.cpp
 
     render.hpp
     render.cpp
