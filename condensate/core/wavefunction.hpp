@@ -8,8 +8,9 @@ class Wavefunction
     private:
         cuDoubleComplex *devPsi, *hostPsi;
     public:
-        void Initialize(cuDoubleComplex *arr);
-        void Step(double mult);
+        int DIM;
+        void Initialize( cuDoubleComplex *arr);
+        void Step( double mult);
         void MapColors(uchar4 *d_out);
         void ExportToVariable(cuDoubleComplex *arr);
         void Cleanup();

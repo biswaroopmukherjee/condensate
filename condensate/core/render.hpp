@@ -3,7 +3,6 @@
 
 
 namespace render {
-
     void startOpenGL();
     void cleanup();
 

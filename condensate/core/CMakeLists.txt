@@ -30,6 +30,9 @@ cuda_add_library(gpcoregpu
     wavefunction.hpp
     wavefunction.cpp
 
+    chamber.hpp
+    chamber.cpp
+
     render.hpp
     render.cpp
 

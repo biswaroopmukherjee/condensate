@@ -15,7 +15,8 @@ import_array();
 %}
 %numpy_typemaps(cuDoubleComplex, NPY_CDOUBLE, int)
 
-%apply (int DIM1, int DIM2, cuDoubleComplex* INPLACE_ARRAY2) {(int sizex, int sizey, cuDoubleComplex *arr)};
+%apply (int DIM1, int DIM2, cuDoubleComplex* INPLACE_ARRAY2) {(int sizeX, int sizeY, cuDoubleComplex *arr)};
+%apply (int DIM1, int DIM2, double* INPLACE_ARRAY2) {(int vsizeX, int vsizeY, double *V)};
 
-%include gpcore.hpp
+%include "gpcore.hpp"
 

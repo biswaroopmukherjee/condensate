@@ -32,6 +32,7 @@ namespace render {
     static GLuint pbo = 0; // OpenGL pixel buffer object
     GLuint tex = 0; // OpenGL texture object
     struct cudaGraphicsResource *cuda_pbo_resource;
+    int DIM = gpcore::chamber.DIM;
 
     // Use a class to store these. then pass the class in?
 
@@ -49,7 +50,8 @@ namespace render {
         cudaGraphicsUnmapResources(1, &cuda_pbo_resource, 0);
         }
 
-        void drawTexture() {
+    void drawTexture() {
+        int DIM = gpcore::chamber.DIM;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, DIM, DIM, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glEnable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
@@ -62,7 +64,7 @@ namespace render {
     }
 
     void display(void) {
-
+        int DIM = gpcore::chamber.DIM;
         sdkStartTimer(&timer);
         render();
         drawTexture();
@@ -113,12 +115,13 @@ namespace render {
     }
 
     int initGL() {
+        int DIM = gpcore::chamber.DIM;
 
         int argc = 1;
         char *argv[1] = {(char*)"Something"};
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-        glutInitWindowSize(gpcore::wWidth, gpcore::wHeight);
+        glutInitWindowSize(DIM, DIM);
         glutCreateWindow("Compute Stable Fluids");
 
         glutDisplayFunc(display);
@@ -137,6 +140,7 @@ namespace render {
     }
 
     void initPixelBuffer() {
+        int DIM = gpcore::chamber.DIM;
         glGenBuffers(1, &pbo);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
         glBufferData(GL_PIXEL_UNPACK_BUFFER, 4*DIM*DIM*sizeof(GLubyte), 0, GL_DYNAMIC_DRAW);
