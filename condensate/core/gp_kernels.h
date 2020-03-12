@@ -16,7 +16,11 @@ void bind_texture(void);
 void unbind_texture(void);
 void delete_texture(void);
 void update_texture(cuDoubleComplex *data, size_t w, size_t h, size_t pitch);
-void kernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, int w, int h);
-void multKernel(cuDoubleComplex *devPsi, double mult, int w, int h);
+void colormapKernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, int w, int h);
+void multKernelLauncher(cuDoubleComplex *devPsi, double mult, int w, int h);
+void realspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, cuDoubleComplex *out, double dt, double useReal, double cooling, int w, int h);
+void momentumspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpKinetic, cuDoubleComplex *out, int w, int h);
+void parSum(cuDoubleComplex *devPsi, double *density, double dx, int w, int h);
+
 #endif
 

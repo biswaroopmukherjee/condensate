@@ -16,24 +16,48 @@ void Wavefunction::Initialize(cuDoubleComplex *arr)
 {
     DIM = gpcore::chamber.DIM;
     int DS = DIM * DIM;
+    int cudoubleDS = sizeof(cuDoubleComplex) * DS;
     // Create Wavefunction
-    hostPsi = (cuDoubleComplex *)malloc(sizeof(cuDoubleComplex) * DS);
-    memcpy( hostPsi, arr, sizeof(cuDoubleComplex) * DS);
+    hostPsi = (cuDoubleComplex *)malloc(cudoubleDS);
+    memcpy( hostPsi, arr, cudoubleDS);
     // Allocate and initialize device data
-    checkCudaErrors(cudaMalloc((void **)&devPsi, sizeof(cuDoubleComplex) * DS));
-    checkCudaErrors(cudaMemcpy(devPsi, hostPsi, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
-
+    checkCudaErrors(cudaMalloc((void **)&devPsi, cudoubleDS));
+    checkCudaErrors(cudaMalloc((void **)&devDensity, sizeof(double) * DS));
+    checkCudaErrors(cudaMemcpy(devPsi, hostPsi, cudoubleDS, cudaMemcpyHostToDevice));
 }
 
 void Wavefunction::Step(double mult)
 {
-    multKernel(devPsi, mult, DIM, DIM);
+    multKernelLauncher(devPsi, mult, DIM, DIM);
 }
 
 
 void Wavefunction::MapColors(uchar4 *d_out)
 {
-    kernelLauncher(d_out, devPsi, DIM, DIM);
+    colormapKernelLauncher(d_out, devPsi, DIM, DIM);
+}
+
+void Wavefunction::RealSpaceHalfStep() {
+    realspaceKernelLauncher(
+                    devPsi, 
+                    gpcore::chamber.devExpPotential, 
+                    devPsi, 
+                    gpcore::chamber.dt,
+                    gpcore::chamber.useReal,
+                    gpcore::chamber.cooling,
+                    DIM, DIM);
+}
+
+void Wavefunction::MomentumSpaceStep() {
+    cufftExecZ2Z(gpcore::chamber.fftPlan2D, devPsi, devPsi, CUFFT_FORWARD);   
+    multKernelLauncher(devPsi, 1.0/DIM, DIM, DIM); // fft renorm
+    momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpKinetic, devPsi, DIM, DIM);
+    cufftExecZ2Z(gpcore::chamber.fftPlan2D, devPsi, devPsi, CUFFT_INVERSE);  
+    multKernelLauncher(devPsi, 1.0/DIM, DIM, DIM); // fft renorm
+}
+
+void Wavefunction::Renormalize() {
+    parSum(devPsi, devDensity, gpcore::chamber.dx, DIM, DIM);
 }
 
 

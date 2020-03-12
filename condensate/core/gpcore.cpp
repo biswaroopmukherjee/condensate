@@ -21,6 +21,7 @@
 #include "gp_kernels.h"
 #include "helper_cudagl.h"
 
+
 namespace gpcore {
   Chamber chamber;
   Wavefunction Psi;
@@ -36,11 +37,10 @@ void setup(int size, double deltat, double time, double omega_r, bool useImag, d
 // Set the parameters of the harmonic potential, and use that as the current potential
 void setHarmonicPotential(double omega, double epsilon) {
   gpcore::chamber.setHarmonicPotential(omega, epsilon);
-  printf("\n\n x = %e\n\n", gpcore::chamber.X[(2*512 + 120)]);
-  printf("\n\n pot = %e\n\n", gpcore::chamber.Potential[(2*512+120)]);
 }
 
 
+// Extract the potential. Todo: import potential, timedependent: make an object, like wavefunction
 void getPotential(int sizeX, int sizeY, double *V){
   unsigned int i;
   for( i=0; i<gpcore::chamber.DS; i++ ) {
@@ -48,40 +48,23 @@ void getPotential(int sizeX, int sizeY, double *V){
   }
 }
 
+
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr) {
 
-  int speed = 6000;
-  int print = 5;
   printf("\n\n Starting GP... \n\n");
-
   render::startOpenGL();
-
   gpcore::Psi.Initialize(arr);
-
-  printf("\n\n speed = %i\n\n", speed);
-  printf("\n\n omega_r = %.3f\n\n", gpcore::chamber.omegaRotation);
-  printf("\n\n pot = %.3f\n\n", gpcore::chamber.Potential[250*512 + 250]);
-
 
   for( int a = 0; a < gpcore::chamber.timesteps; a++ ) {
 
-      double mult = exp(-(double)a / speed);
-      // gpcore::Psi.RealSpaceHalfStep(); 
-      // gpcore::Psi.MomentumSpaceStep();
-      // gpcore::Psi.RealSpaceHalfStep();
-      // gpcore::Psi.RotatingFrame();
-      gpcore::Psi.Step(mult);
-      if (a%print ==0){
-
-        printf("\n\n mult = %.3f", mult);
-        
-        
-        glutMainLoopEvent();
-      }
+      gpcore::Psi.RealSpaceHalfStep(); 
+      gpcore::Psi.MomentumSpaceStep();
+      gpcore::Psi.RealSpaceHalfStep();
+      gpcore::Psi.Renormalize();
+      // gpcore::Psi.RotatingFrame(gpcore::chamber.omega[a]);
+      glutMainLoopEvent();
    }
-
-
 
   gpcore::Psi.ExportToVariable(arr);
   gpcore::Psi.Cleanup();

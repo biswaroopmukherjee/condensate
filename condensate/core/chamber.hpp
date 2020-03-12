@@ -22,6 +22,7 @@ class Chamber
         double cooling, useReal;
         long atomNumber, steps;
         bool useImaginaryTime;
+        cufftHandle fftPlan2D;
         void setup(int size,double deltat, double time,  double omega_r, bool useImag, double cool);
         void setHarmonicPotential(double o, double ep);
         // void InitializePotential(cuDoubleComplex *arr);

@@ -22,10 +22,11 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
 	cooling = useImaginaryTime ? 1 : cool;
 	useReal = useImaginaryTime ? 0 : 1;
 
-    X = (double *) malloc(sizeof(double) * DIM);
-	Y = (double *) malloc(sizeof(double) * DIM);
-	kX = (double *) malloc(sizeof(double) * DIM);
-	kY = (double *) malloc(sizeof(double) * DIM);
+	int doubleDIM = sizeof(double) * DIM;
+    X = (double *) malloc(doubleDIM);
+	Y = (double *) malloc(doubleDIM);
+	kX = (double *) malloc(doubleDIM);
+	kY = (double *) malloc(doubleDIM);
 
     atomNumber = 1e5;
 	mass = 1.4431607e-25; //Rb 87 mass, kg
@@ -55,22 +56,29 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
 		kY[i + (DIM/2)] = -kfov + (i+1)*dk;
 	}
 
-    
-	Potential = (double *) malloc(sizeof(double) * DS);
-	Kinetic   = (double *) malloc(sizeof(double) * DS);
-    XkY = (double *) malloc(sizeof(double) * DS);
-	YkX = (double *) malloc(sizeof(double) * DS);
-    hostExpXkY = (cuDoubleComplex *) malloc(sizeof(cuDoubleComplex) * DS);
-	hostExpYkX = (cuDoubleComplex *) malloc(sizeof(cuDoubleComplex) * DS);
-	hostExpKinetic   = (cuDoubleComplex *) malloc(sizeof(cuDoubleComplex) * DS);
-	hostExpPotential = (cuDoubleComplex *) malloc(sizeof(cuDoubleComplex) * DS);
+    int doubleDS = sizeof(double) * DS;
+	int cudoubleDS = sizeof(cuDoubleComplex) * DS;
+
+	Potential = (double *) malloc(doubleDS);
+	Kinetic   = (double *) malloc(doubleDS);
+    XkY = (double *) malloc(doubleDS);
+	YkX = (double *) malloc(doubleDS);
+    hostExpXkY = (cuDoubleComplex *) malloc(cudoubleDS);
+	hostExpYkX = (cuDoubleComplex *) malloc(cudoubleDS);
+	hostExpKinetic   = (cuDoubleComplex *) malloc(cudoubleDS);
+	hostExpPotential = (cuDoubleComplex *) malloc(cudoubleDS);
 
     
-	cudaMalloc((void**) &devExpPotential, sizeof(cuDoubleComplex) * DS);
-	cudaMalloc((void**) &devExpKinetic, sizeof(cuDoubleComplex) * DS);
-	cudaMalloc((void**) &devExpXkY, sizeof(cuDoubleComplex) * DS);
-	cudaMalloc((void**) &devExpYkX, sizeof(cuDoubleComplex) * DS);
+	cudaMalloc((void**) &devExpPotential, cudoubleDS);
+	cudaMalloc((void**) &devExpKinetic, cudoubleDS);
+	cudaMalloc((void**) &devExpXkY, cudoubleDS);
+	cudaMalloc((void**) &devExpYkX, cudoubleDS);
+    cufftPlan2d(&fftPlan2D, DIM, DIM, CUFFT_Z2Z);
 	// cudaMalloc((void**) &par_sum, sizeof(cuDoubleComplex) * (DS/threads));
+	
+	// for ffts
+	double renorm_factor_2d=1.0/pow(DS,0.5);
+	double renorm_factor_1d=1.0/pow(DIM,0.5);
 
 
 	for( i=0; i < DIM; i++ ){
@@ -93,9 +101,9 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
 	}
 
 	// Copy to device
-    checkCudaErrors(cudaMemcpy(devExpKinetic, hostExpKinetic, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(devExpXkY, hostExpXkY, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(devExpYkX, hostExpYkX, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devExpKinetic, hostExpKinetic, cudoubleDS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devExpXkY, hostExpXkY, cudoubleDS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devExpYkX, hostExpYkX, cudoubleDS, cudaMemcpyHostToDevice));
 
 
 }
