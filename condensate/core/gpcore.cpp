@@ -50,7 +50,7 @@ void getPotential(int sizeX, int sizeY, double *V){
 
 
 // evolve the wavefunction
-void Evolve(int sizex, int sizey, cuDoubleComplex *arr) {
+void Evolve(int sizex, int sizey, cuDoubleComplex *arr, int skip) {
 
   printf("\n\n Starting GP... \n\n");
   render::startOpenGL();
@@ -63,7 +63,7 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr) {
       gpcore::Psi.RealSpaceHalfStep();
       gpcore::Psi.Renormalize();
       // gpcore::Psi.RotatingFrame(gpcore::chamber.omega[a]);
-      glutMainLoopEvent();
+      if (a % skip ==0) glutMainLoopEvent();
    }
 
   gpcore::Psi.ExportToVariable(arr);

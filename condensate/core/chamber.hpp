@@ -20,6 +20,7 @@ class Chamber
         double omegaRotation;
         double mass, a_s, a0;
         double cooling, useReal;
+        double cmapscale;
         long atomNumber, steps;
         bool useImaginaryTime;
         cufftHandle fftPlan2D;

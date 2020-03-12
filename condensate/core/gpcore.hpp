@@ -8,7 +8,7 @@
 void setup(int size, double deltat, double time, double omega_r, bool useImag, double cool);
 void setHarmonicPotential(double omega, double epsilon);
 void getPotential(int vsizeX, int vsizeY, double *V);
-void Evolve(int sizeX, int sizeY, cuDoubleComplex *arr);
+void Evolve(int sizeX, int sizeY, cuDoubleComplex *arr, int skip);
 
 namespace gpcore 
 {

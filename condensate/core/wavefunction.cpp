@@ -34,7 +34,7 @@ void Wavefunction::Step(double mult)
 
 void Wavefunction::MapColors(uchar4 *d_out)
 {
-    colormapKernelLauncher(d_out, devPsi, DIM, DIM);
+    colormapKernelLauncher(d_out, devPsi, gpcore::chamber.cmapscale, DIM, DIM);
 }
 
 void Wavefunction::RealSpaceHalfStep() {

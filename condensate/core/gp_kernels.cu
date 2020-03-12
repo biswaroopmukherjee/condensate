@@ -54,23 +54,22 @@ double complexMagnitudeSquared(cuDoubleComplex in){
 
 // Handles display mapping from cuDoubleComplex to uchar4
 __global__
-void display_psi(uchar4 *d_out, cuDoubleComplex *devPsi, int w, int h) { 
-    double scale=8e6;
+void display_psi(uchar4 *d_out, cuDoubleComplex *devPsi, double scale, int w, int h) { 
     const int tidx = blockIdx.x*blockDim.x + threadIdx.x;
     const int tidy = blockIdx.y*blockDim.y + threadIdx.y;
     if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
     const int i = tidx + tidy * w; // 1D indexing
     double mag = complexMagnitudeSquared(devPsi[i]);
-    d_out[i].x = 200 * mag/scale;
-    d_out[i].y = 200 * mag/scale;
+    d_out[i].x = clip(200 * mag/scale);
+    d_out[i].y = clip(200 * mag/scale);
     d_out[i].z = 0;
     d_out[i].w = 255;
 }
 
-void colormapKernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, int w, int h) {
+void colormapKernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, double scale, int w, int h) {
     const dim3 gridSize (iDivUp(w, TILEX), iDivUp(h, TILEY));
     const dim3 blockSize(TILEX, TILEY);
-    display_psi<<<gridSize, blockSize>>>(d_out, devPsi, w, h);
+    display_psi<<<gridSize, blockSize>>>(d_out, devPsi, scale, w, h);
 }
 
 

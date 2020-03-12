@@ -96,9 +96,27 @@ namespace render {
             return;
             break;
 
+
         default:
             break;
         }
+    }
+
+    void special(int key, int x, int y)
+    {
+        switch (key)
+        {
+
+            case GLUT_KEY_DOWN:
+                gpcore::chamber.cmapscale-=1e6;
+                break;
+
+            case GLUT_KEY_UP:
+                gpcore::chamber.cmapscale+=1e6;
+                break;
+        }
+
+        glutPostRedisplay();
     }
 
 
@@ -126,6 +144,7 @@ namespace render {
 
         glutDisplayFunc(display);
         glutKeyboardFunc(keyboard);
+        glutSpecialFunc(special);
         glutCloseFunc(cleanup);
         glewInit();
         gluOrtho2D(0, DIM, DIM, 0);

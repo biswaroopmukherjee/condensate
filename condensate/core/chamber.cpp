@@ -17,6 +17,7 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
     DS = DIM*DIM;
 	timesteps = time;
 	dt = deltat;
+	cmapscale = 8e6;
 
 	useImaginaryTime = useImag;
 	cooling = useImaginaryTime ? 1 : cool;
@@ -136,9 +137,9 @@ void Chamber::Cleanup()
     free(Kinetic); free(hostExpKinetic); 
 	free(hostExpXkY); free(hostExpYkX); 
 	free(Potential); free(hostExpPotential);
-    // checkCudaErrors(cudaFree(devExpPotential));
-    // checkCudaErrors(cudaFree(devExpKinetic));
-    // checkCudaErrors(cudaFree(devExpXkY));
-    // checkCudaErrors(cudaFree(devExpYkX));
+    cudaFree(devExpPotential);
+    cudaFree(devExpKinetic);
+    cudaFree(devExpXkY);
+    cudaFree(devExpYkX);
     checkCudaErrors(cudaDeviceReset());
 }
