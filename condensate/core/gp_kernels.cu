@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <math.h>  
 #include <cufft.h>          // CUDA FFT Libraries
-
+ 
 #include "defines.h"
 #include "gp_kernels.h"
 
@@ -26,6 +26,26 @@ __constant__ double gDenConst = 6.6741e-40;//Evaluted in MATLAB: N*4*HBAR*HBAR*P
 //******************************
 __device__
 unsigned char clip(double x) {return x > 255 ? 255 : (x < 0 ? 0 : x); }
+
+__device__
+uchar4 viridis(double value) {
+    uchar4 result;
+    result.x = clip(255 * ( 2.854 * pow(value, 3) - 2.098 * pow(value, 2) + 0.037 * value + 0.254));
+    result.y = clip(255 * (-0.176 * pow(value, 3) - 0.167 * pow(value, 2) + 1.243 * value + 0.016));
+    result.z = clip(255 * ( 0.261 * pow(value, 3) - 1.833 * pow(value, 2) + 1.275 * value + 0.309));
+    result.w = 255;
+    return result;
+}
+
+__device__
+uchar4 inferno(double value) {
+    uchar4 result;
+    result.x = clip(255 * (-1.760 * pow(value, 3) + 1.487  * pow(value, 2) + 1.223 * value - 0.034));
+    result.y = clip(255 * ( 0.284 * pow(value, 3) - 0.827  * pow(value, 2) - 0.086 * value + 0.026));
+    result.z = clip(255 * ( 7.533 * pow(value, 3) - 11.435 * pow(value, 2) + 4.603 * value - 0.096));
+    result.w = 255;
+    return result;
+}
 
 
 //Round a / b to nearest higher integer value
@@ -60,10 +80,7 @@ void display_psi(uchar4 *d_out, cuDoubleComplex *devPsi, double scale, int w, in
     if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
     const int i = tidx + tidy * w; // 1D indexing
     double mag = complexMagnitudeSquared(devPsi[i]);
-    d_out[i].x = clip(200 * mag/scale);
-    d_out[i].y = clip(200 * mag/scale);
-    d_out[i].z = 0;
-    d_out[i].w = 255;
+    d_out[i] = viridis(mag/scale);
 }
 
 void colormapKernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, double scale, int w, int h) {
