@@ -12,10 +12,9 @@
 
 
 // setup for the size of the grid, the kinetic part, and other parameters
-void Chamber::setup(int size, double deltat, double time, double omega_r, bool useImag, double cool) {
+void Chamber::setup(int size, double deltat, bool useImag, double cool) {
     DIM = size;
     DS = DIM*DIM;
-	timesteps = time;
 	dt = deltat;
 	cmapscale = 8e6;
 
@@ -34,7 +33,6 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
 	a_s = 4.67e-9;
     omegaZ = 10;
     omega = 1;
-	omegaRotation = omega_r;
 	Rxy = pow(15,0.2)*pow(atomNumber*a_s*sqrt(mass*omegaZ/HBAR),0.2);
 	a0 = sqrt(HBAR/(2*mass*omega));
 	fov = 7*Rxy*a0;
@@ -64,8 +62,8 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
 	Kinetic   = (double *) malloc(doubleDS);
     XkY = (double *) malloc(doubleDS);
 	YkX = (double *) malloc(doubleDS);
-    hostExpXkY = (cuDoubleComplex *) malloc(cudoubleDS);
-	hostExpYkX = (cuDoubleComplex *) malloc(cudoubleDS);
+    // hostExpXkY = (cuDoubleComplex *) malloc(cudoubleDS);
+	// hostExpYkX = (cuDoubleComplex *) malloc(cudoubleDS);
 	hostExpKinetic   = (cuDoubleComplex *) malloc(cudoubleDS);
 	hostExpPotential = (cuDoubleComplex *) malloc(cudoubleDS);
 
@@ -93,18 +91,18 @@ void Chamber::setup(int size, double deltat, double time, double omega_r, bool u
 										  
 			XkY[(i*DIM + j)] = X[i]*kY[j];
 			YkX[(i*DIM + j)] = -Y[j]*kY[i];
-			hostExpXkY[(i*DIM + j)].x = cos(-omegaRotation*XkY[(i*DIM + j)]*dt);
-			hostExpXkY[(i*DIM + j)].y = sin(-omegaRotation*XkY[(i*DIM + j)]*dt);
-			hostExpYkX[(i*DIM + j)].x = cos(-omegaRotation*YkX[(i*DIM + j)]*dt);
-			hostExpYkX[(i*DIM + j)].y = sin(-omegaRotation*YkX[(i*DIM + j)]*dt);
+			// hostExpXkY[(i*DIM + j)].x = cos(-omegaRotation*XkY[(i*DIM + j)]*dt);
+			// hostExpXkY[(i*DIM + j)].y = sin(-omegaRotation*XkY[(i*DIM + j)]*dt);
+			// hostExpYkX[(i*DIM + j)].x = cos(-omegaRotation*YkX[(i*DIM + j)]*dt);
+			// hostExpYkX[(i*DIM + j)].y = sin(-omegaRotation*YkX[(i*DIM + j)]*dt);
 
 		}
 	}
 
 	// Copy to device
     checkCudaErrors(cudaMemcpy(devExpKinetic, hostExpKinetic, cudoubleDS, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(devExpXkY, hostExpXkY, cudoubleDS, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(devExpYkX, hostExpYkX, cudoubleDS, cudaMemcpyHostToDevice));
+    // checkCudaErrors(cudaMemcpy(devExpXkY, hostExpXkY, cudoubleDS, cudaMemcpyHostToDevice));
+    // checkCudaErrors(cudaMemcpy(devExpYkX, hostExpYkX, cudoubleDS, cudaMemcpyHostToDevice));
 
 
 }

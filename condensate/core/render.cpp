@@ -139,7 +139,7 @@ namespace render {
         char *argv[1] = {(char*)"Something"};
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-        glutInitWindowSize(DIM, DIM);
+        glutInitWindowSize(2*DIM, 2*DIM);
         glutCreateWindow("Compute Stable Fluids");
 
         glutDisplayFunc(display);

@@ -29,8 +29,8 @@ namespace gpcore {
 
 
 // Set the spatial grid size of the system
-void setup(int size, double deltat, double time, double omega_r, bool useImag, double cool) {
-  gpcore::chamber.setup(size, deltat, time, omega_r, useImag, cool);
+void setup(int size, double deltat, bool useImag, double cool) {
+  gpcore::chamber.setup(size, deltat, useImag, cool);
 }
 
 
@@ -50,26 +50,26 @@ void getPotential(int sizeX, int sizeY, double *V){
 
 
 // evolve the wavefunction
-void Evolve(int sizex, int sizey, cuDoubleComplex *arr, int skip) {
+void Evolve(int sizex, int sizey, cuDoubleComplex *arr, long steps, int skip, bool show) {
 
   printf("\n\n Starting GP... \n\n");
   render::startOpenGL();
   gpcore::Psi.Initialize(arr);
 
-  for( int a = 0; a < gpcore::chamber.timesteps; a++ ) {
+  for( int a = 0; a < steps; a++ ) {
 
       gpcore::Psi.RealSpaceHalfStep(); 
       gpcore::Psi.MomentumSpaceStep();
       gpcore::Psi.RealSpaceHalfStep();
       gpcore::Psi.Renormalize();
       // gpcore::Psi.RotatingFrame(gpcore::chamber.omega[a]);
-      if (a % skip ==0) glutMainLoopEvent();
+      if ((a%skip == 0) && show) glutMainLoopEvent();
    }
-
+  
+  render::cleanup();
   gpcore::Psi.ExportToVariable(arr);
   gpcore::Psi.Cleanup();
   gpcore::chamber.Cleanup();
-  render::cleanup();
 
   printf("\n Done \n\n");
 }

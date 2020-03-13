@@ -73,5 +73,4 @@ void Wavefunction::Cleanup()
 {
     free(hostPsi);
     checkCudaErrors(cudaFree(devPsi));
-    checkCudaErrors(cudaDeviceReset());
 }
