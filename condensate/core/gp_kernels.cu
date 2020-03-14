@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "gp_kernels.h"
 
-__constant__ double gDenConst = 6.6741e-40;//Evaluted in MATLAB: N*4*HBAR*HBAR*PI*(4.67e-9/mass)*sqrt(mass*(omegaZ)/(2*PI*HBAR))
+__constant__ double gDenConst = 0.02*6.6741e-40;//Evaluted in MATLAB: N*4*HBAR*HBAR*PI*(4.67e-9/mass)*sqrt(mass*(omegaZ)/(2*PI*HBAR))
 
 
 // *****************************
