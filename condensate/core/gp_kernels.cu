@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "gp_kernels.h"
 
-__constant__ double gDenConst = 0.02*6.6741e-40;//Evaluted in MATLAB: N*4*HBAR*HBAR*PI*(4.67e-9/mass)*sqrt(mass*(omegaZ)/(2*PI*HBAR))
+// __constant__ double gDenConst = 0.02*6.6741e-40;//Evaluted in MATLAB: N*4*HBAR*HBAR*PI*(4.67e-9/mass)*sqrt(mass*(omegaZ)/(2*PI*HBAR))
 
 
 // *****************************
@@ -112,7 +112,8 @@ void multKernelLauncher(cuDoubleComplex *devPsi, double mult, int w, int h){
 
 // Realspace evolution 
 __global__
-void realevolve_psi(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, cuDoubleComplex *out, double dt, double useReal, double cooling, int w, int h){
+void realevolve_psi(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, cuDoubleComplex *out,
+                    double g, double dt, double useReal, double cooling, int w, int h){
     const int tidx = blockIdx.x*blockDim.x + threadIdx.x;
     const int tidy = blockIdx.y*blockDim.y + threadIdx.y;
     if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
@@ -120,7 +121,7 @@ void realevolve_psi(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, c
 
     cuDoubleComplex tPotential = devExpPotential[i];
     cuDoubleComplex tPsi = devPsi[i];
-    double gn = gDenConst * complexMagnitudeSquared(tPsi) * (dt / (2*HBAR));
+    double gn = g * complexMagnitudeSquared(tPsi) * (dt / (2*HBAR));
     cuDoubleComplex expgn;
     expgn.x = exp( -gn * cooling) * cos( -gn * useReal);
     expgn.y = exp( -gn * cooling) * sin( -gn * useReal);
@@ -129,10 +130,11 @@ void realevolve_psi(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, c
     out[i] = cuCmul(realspaceUnitary, tPsi);
 }
 
-void realspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, cuDoubleComplex *out, double dt, double useReal, double cooling, int w, int h){
+void realspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, cuDoubleComplex *out,
+                             double g, double dt, double useReal, double cooling, int w, int h){
     const dim3 gridSize (iDivUp(w, TILEX), iDivUp(h, TILEY));
     const dim3 blockSize(TILEX, TILEY);
-    realevolve_psi<<<gridSize, blockSize>>>(devPsi, devExpPotential, out, dt, useReal, cooling, w, h);
+    realevolve_psi<<<gridSize, blockSize>>>(devPsi, devExpPotential, out, g, dt, useReal, cooling, w, h);
 }
 
 

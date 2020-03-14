@@ -42,6 +42,7 @@ void Wavefunction::RealSpaceHalfStep() {
                     devPsi, 
                     gpcore::chamber.devExpPotential, 
                     devPsi, 
+                    gpcore::chamber.g,
                     gpcore::chamber.dt,
                     gpcore::chamber.useReal,
                     gpcore::chamber.cooling,

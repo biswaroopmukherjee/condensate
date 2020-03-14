@@ -29,8 +29,8 @@ namespace gpcore {
 
 
 // Set the spatial grid size of the system
-void Setup(int size, double deltat, bool useImag, double cool) {
-  gpcore::chamber.setup(size, deltat, useImag, cool);
+void Setup(int size, double g, double deltat, bool useImag, double cool) {
+  gpcore::chamber.setup(size, g, deltat, useImag, cool);
 }
 
 

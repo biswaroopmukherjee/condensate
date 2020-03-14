@@ -5,7 +5,7 @@
 #include "chamber.hpp"
 
 
-void Setup(int size, double deltat, bool useImag, double cool);
+void Setup(int size, double g, double deltat, bool useImag, double cool);
 void SetHarmonicPotential(double omega, double epsilon);
 void GetPotential(int vsizeX, int vsizeY, double *V);
 void RotatingFrame(int size, double *omega_r);
