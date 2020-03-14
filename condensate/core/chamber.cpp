@@ -18,9 +18,11 @@ void Chamber::setup(int size, double deltat, bool useImag, double cool) {
 	dt = deltat;
 	cmapscale = 8e6;
 
+	useRotatingFrame = false;
 	useImaginaryTime = useImag;
 	cooling = useImaginaryTime ? 1 : cool;
 	useReal = useImaginaryTime ? 0 : 1;
+
 
 	int doubleDIM = sizeof(double) * DIM;
     X = (double *) malloc(doubleDIM);
@@ -62,22 +64,19 @@ void Chamber::setup(int size, double deltat, bool useImag, double cool) {
 	Kinetic   = (double *) malloc(doubleDS);
     XkY = (double *) malloc(doubleDS);
 	YkX = (double *) malloc(doubleDS);
-    // hostExpXkY = (cuDoubleComplex *) malloc(cudoubleDS);
-	// hostExpYkX = (cuDoubleComplex *) malloc(cudoubleDS);
 	hostExpKinetic   = (cuDoubleComplex *) malloc(cudoubleDS);
 	hostExpPotential = (cuDoubleComplex *) malloc(cudoubleDS);
-
     
 	cudaMalloc((void**) &devExpPotential, cudoubleDS);
 	cudaMalloc((void**) &devExpKinetic, cudoubleDS);
+	cudaMalloc((void**) &devXkY, doubleDS);
+	cudaMalloc((void**) &devYkX, doubleDS);
 	cudaMalloc((void**) &devExpXkY, cudoubleDS);
 	cudaMalloc((void**) &devExpYkX, cudoubleDS);
-    cufftPlan2d(&fftPlan2D, DIM, DIM, CUFFT_Z2Z);
-	// cudaMalloc((void**) &par_sum, sizeof(cuDoubleComplex) * (DS/threads));
 	
-	// for ffts
-	double renorm_factor_2d=1.0/pow(DS,0.5);
-	double renorm_factor_1d=1.0/pow(DIM,0.5);
+	// for ffts;
+    cufftPlan2d(&fftPlan2D, DIM, DIM, CUFFT_Z2Z);
+    cufftPlan1d(&fftPlan1D, DIM, CUFFT_Z2Z, DIM);
 
 
 	for( i=0; i < DIM; i++ ){
@@ -89,20 +88,16 @@ void Chamber::setup(int size, double deltat, bool useImag, double cool) {
 			hostExpKinetic[(i*DIM + j)].y = exp( -Kinetic[(i*DIM + j)] * (cooling*dt/HBAR) ) *
 										    sin( -Kinetic[(i*DIM + j)] * (useReal*dt/HBAR) );
 										  
-			XkY[(i*DIM + j)] = X[i]*kY[j];
+			XkY[(i*DIM + j)] =  X[i]*kY[j];
 			YkX[(i*DIM + j)] = -Y[j]*kY[i];
-			// hostExpXkY[(i*DIM + j)].x = cos(-omegaRotation*XkY[(i*DIM + j)]*dt);
-			// hostExpXkY[(i*DIM + j)].y = sin(-omegaRotation*XkY[(i*DIM + j)]*dt);
-			// hostExpYkX[(i*DIM + j)].x = cos(-omegaRotation*YkX[(i*DIM + j)]*dt);
-			// hostExpYkX[(i*DIM + j)].y = sin(-omegaRotation*YkX[(i*DIM + j)]*dt);
 
 		}
 	}
 
 	// Copy to device
     checkCudaErrors(cudaMemcpy(devExpKinetic, hostExpKinetic, cudoubleDS, cudaMemcpyHostToDevice));
-    // checkCudaErrors(cudaMemcpy(devExpXkY, hostExpXkY, cudoubleDS, cudaMemcpyHostToDevice));
-    // checkCudaErrors(cudaMemcpy(devExpYkX, hostExpYkX, cudoubleDS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devXkY, XkY, doubleDS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devYkX, YkX, doubleDS, cudaMemcpyHostToDevice));
 
 
 }
@@ -133,10 +128,11 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 void Chamber::Cleanup()
 {
     free(Kinetic); free(hostExpKinetic); 
-	free(hostExpXkY); free(hostExpYkX); 
 	free(Potential); free(hostExpPotential);
     cudaFree(devExpPotential);
     cudaFree(devExpKinetic);
+    cudaFree(devXkY);
+    cudaFree(devYkX);
     cudaFree(devExpXkY);
     cudaFree(devExpYkX);
     checkCudaErrors(cudaDeviceReset());

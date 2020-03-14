@@ -156,6 +156,39 @@ void momentumspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devEx
 }
 
 
+
+// Realspace evolution 
+__global__
+void gaugefield(double omegaR, 
+                double *devXkY, double *devYkX, cuDoubleComplex *devExpXkY, cuDoubleComplex *devExpYkX,
+                double dt, double useReal, double cooling, int w, int h){
+    const int tidx = blockIdx.x*blockDim.x + threadIdx.x;
+    const int tidy = blockIdx.y*blockDim.y + threadIdx.y;
+    if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
+    const int i = tidx + tidy * w; // 1D indexing
+
+    devExpXkY[i].x = exp( -omegaR * devXkY[i] * cooling * dt) * 
+                     cos( -omegaR * devXkY[i] * useReal * dt);
+    devExpXkY[i].y = exp( -omegaR * devXkY[i] * cooling * dt) * 
+                     sin( -omegaR * devXkY[i] * useReal * dt);
+    devExpYkX[i].x = exp( -omegaR * devYkX[i] * cooling * dt) * 
+                     cos( -omegaR * devYkX[i] * useReal * dt);
+    devExpYkX[i].y = exp( -omegaR * devYkX[i] * cooling * dt) * 
+                     sin( -omegaR * devYkX[i] * useReal * dt);
+}
+
+
+void gaugefieldKernelLauncher(double omegaR, 
+                              double *devXkY, double *devYkX, cuDoubleComplex *devExpXkY, cuDoubleComplex *devExpYkX,
+                              double dt, double useReal, double cooling, int w, int h){
+    const dim3 gridSize (iDivUp(w, TILEX), iDivUp(h, TILEY));
+    const dim3 blockSize(TILEX, TILEY);
+    gaugefield<<<gridSize, blockSize>>>(omegaR, devXkY, devYkX, devExpXkY, devExpYkX, dt, useReal, cooling, w, h);
+}
+
+
+
+
 // Density psi
 __global__ 
 void density_psi(cuDoubleComplex *devPsi, double *density, int w, int h) {
@@ -257,3 +290,6 @@ void parSum(cuDoubleComplex *devPsi, double *density, double dx, int w, int h){
 */
     scalarDiv_wfcNorm<<<gridSize, threads>>>(devPsi, dg, density, devPsi, w, h);
 }
+
+
+

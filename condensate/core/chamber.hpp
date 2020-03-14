@@ -8,10 +8,10 @@ class Chamber
 {
     public:
         int DIM, DS;
-        double *Potential, *Kinetic, *XkY, *YkX;
+        double *Potential, *Kinetic, *XkY, *YkX, *devXkY, *devYkX, *omegaR;
         cuDoubleComplex *devExpPotential, *hostExpPotential;
         cuDoubleComplex *devExpKinetic, *hostExpKinetic;
-        cuDoubleComplex *devExpXkY, *devExpYkX, *hostExpXkY, *hostExpYkX;
+        cuDoubleComplex *devExpXkY, *devExpYkX;
         double *X, *Y, *kX, *kY;
         double dx, dy, dk, dt;
         double fov, kfov;
@@ -21,8 +21,8 @@ class Chamber
         double cooling, useReal;
         double cmapscale;
         long atomNumber;
-        bool useImaginaryTime;
-        cufftHandle fftPlan2D;
+        bool useImaginaryTime, useRotatingFrame;
+        cufftHandle fftPlan2D, fftPlan1D;
         void setup(int size,double deltat, bool useImag, double cool);
         void setHarmonicPotential(double o, double ep);
         // void InitializePotential(cuDoubleComplex *arr);

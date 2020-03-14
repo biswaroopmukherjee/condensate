@@ -60,6 +60,62 @@ void Wavefunction::Renormalize() {
     parSum(devPsi, devDensity, gpcore::chamber.dx, DIM, DIM);
 }
 
+void Wavefunction::RotatingFrame(unsigned long timestep) {
+    int DIM = gpcore::chamber.DIM;
+    double omega = gpcore::chamber.omegaR[timestep];
+    double renorm1D = 1.0 / pow(DIM, 0.5);
+    double renorm2D = 1.0 / DIM;
+    
+
+    if ((timestep==0) || (omega != gpcore::chamber.omegaR[timestep-1])) {
+        gaugefieldKernelLauncher(omega,
+                                 gpcore::chamber.devXkY, gpcore::chamber.devYkX,
+                                 gpcore::chamber.devExpXkY, gpcore::chamber.devExpYkX,
+                                 gpcore::chamber.dt, gpcore::chamber.useReal, gpcore::chamber.cooling,
+                                 DIM, DIM);
+    }
+
+    switch(timestep%2){
+
+        case 0: // even step
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_FORWARD); // xky
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm
+        momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpXkY, devPsi, DIM, DIM);
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_INVERSE);
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm
+
+        cufftExecZ2Z(gpcore::chamber.fftPlan2D,devPsi,devPsi,CUFFT_FORWARD); //2D forward
+        multKernelLauncher(devPsi, renorm2D, DIM, DIM); // fft renorm
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_INVERSE); //1D inverse to ykx
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpYkX, devPsi, DIM, DIM);
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_FORWARD); // kxky 
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        cufftExecZ2Z(gpcore::chamber.fftPlan2D,devPsi,devPsi,CUFFT_INVERSE); //2D Inverse
+        multKernelLauncher(devPsi, renorm2D, DIM, DIM); // fft renorm
+        break;
+
+        case 1:	// odd step
+        cufftExecZ2Z(gpcore::chamber.fftPlan2D,devPsi,devPsi,CUFFT_FORWARD); //2D forward
+        multKernelLauncher(devPsi, renorm2D, DIM, DIM); // fft renorm
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_INVERSE); //1D inverse to ykx
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpYkX, devPsi, DIM, DIM);
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_FORWARD); // kxky 
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        cufftExecZ2Z(gpcore::chamber.fftPlan2D,devPsi,devPsi,CUFFT_INVERSE); //2D Inverse
+        multKernelLauncher(devPsi, renorm2D, DIM, DIM); // fft renorm
+
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_FORWARD); // xky
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpXkY, devPsi, DIM, DIM);
+        cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_INVERSE);
+        multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        break;
+    }
+
+    
+}
 
 void Wavefunction::ExportToVariable(cuDoubleComplex *arr)
 {

@@ -20,6 +20,9 @@ void colormapKernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, double scale
 void multKernelLauncher(cuDoubleComplex *devPsi, double mult, int w, int h);
 void realspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPotential, cuDoubleComplex *out, double dt, double useReal, double cooling, int w, int h);
 void momentumspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpKinetic, cuDoubleComplex *out, int w, int h);
+void gaugefieldKernelLauncher(double omega, 
+                              double *devXkY, double *devYkX, cuDoubleComplex *devExpXkY, cuDoubleComplex *devExpYkX,
+                              double dt, double useReal, double cooling, int w, int h);
 void parSum(cuDoubleComplex *devPsi, double *density, double dx, int w, int h);
 
 #endif

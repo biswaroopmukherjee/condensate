@@ -29,40 +29,48 @@ namespace gpcore {
 
 
 // Set the spatial grid size of the system
-void setup(int size, double deltat, bool useImag, double cool) {
+void Setup(int size, double deltat, bool useImag, double cool) {
   gpcore::chamber.setup(size, deltat, useImag, cool);
 }
 
 
 // Set the parameters of the harmonic potential, and use that as the current potential
-void setHarmonicPotential(double omega, double epsilon) {
+void SetHarmonicPotential(double omega, double epsilon) {
   gpcore::chamber.setHarmonicPotential(omega, epsilon);
 }
 
 
 // Extract the potential. Todo: import potential, timedependent: make an object, like wavefunction
-void getPotential(int sizeX, int sizeY, double *V){
-  unsigned int i;
-  for( i=0; i<gpcore::chamber.DS; i++ ) {
+void GetPotential(int sizeX, int sizeY, double *V){
+  for( unsigned int i=0; i<gpcore::chamber.DS; i++ ) {
     V[i] = gpcore::chamber.Potential[i] / HBAR;
   }
 }
 
+// Setup rotating frame with varying rotation freq omegaR. 
+void RotatingFrame(int size, double *omega_r){
+  gpcore::chamber.useRotatingFrame = true;
+  gpcore::chamber.omegaR = (double *) malloc(sizeof(double) * size);
+  for( unsigned int i=0; i<size; i++ ) {
+    gpcore::chamber.omegaR[i] = omega_r[i];
+  }
+};
+
 
 // evolve the wavefunction
-void Evolve(int sizex, int sizey, cuDoubleComplex *arr, long steps, int skip, bool show) {
+void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show) {
 
   printf("\n\n Starting GP... \n\n");
   render::startOpenGL();
   gpcore::Psi.Initialize(arr);
 
-  for( int a = 0; a < steps; a++ ) {
+  for( unsigned long a = 0; a < steps; a++ ) {
 
       gpcore::Psi.RealSpaceHalfStep(); 
       gpcore::Psi.MomentumSpaceStep();
       gpcore::Psi.RealSpaceHalfStep();
+      if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a);
       gpcore::Psi.Renormalize();
-      // gpcore::Psi.RotatingFrame(gpcore::chamber.omega[a]);
       if ((a%skip == 0) && show) glutMainLoopEvent();
    }
   
