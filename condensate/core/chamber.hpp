@@ -22,7 +22,7 @@ class Chamber
         bool useImaginaryTime, useRotatingFrame;
         cufftHandle fftPlan2D, fftPlan1D;
         
-        void setup(int size, double fovinput, double ginput, double deltat, bool useImag, double cool);
+        void setup(int size, double fov, double g, double deltat, bool useImag, double cool);
         void setHarmonicPotential(double o, double ep);
         // void InitializePotential(cuDoubleComplex *arr);
         void Cleanup();

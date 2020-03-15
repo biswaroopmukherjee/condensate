@@ -30,6 +30,7 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	kY = (double *) malloc(doubleDIM);
 
 	g = ginput;
+	mass = 3.8e-26; //Rb 87 mass, kg
 	fov = fovinput;
 	kfov = (PI/fov)*(DIM>>1);
     dx = fov/(DIM>>1);
