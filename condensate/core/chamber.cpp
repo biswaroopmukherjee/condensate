@@ -31,7 +31,7 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 
 	g = ginput;
 	mass = 3.8e-26; //Rb 87 mass, kg
-	fov = fovinput;
+	fov = fovinput/2;
 	kfov = (PI/fov)*(DIM>>1);
     dx = fov/(DIM>>1);
     dk = PI/(fov);
