@@ -12,17 +12,16 @@
 
 
 // setup for the size of the grid, the kinetic part, and other parameters
-void Chamber::setup(int size, double ginput, double deltat, bool useImag, double cool) {
+void Chamber::setup(int size, double fovinput, double ginput, double deltat, bool useImag, double cool) {
     DIM = size;
     DS = DIM*DIM;
 	dt = deltat;
-	cmapscale = 8e6;
+	mass = 3.8e-26; // Na-23 mass
 
 	useRotatingFrame = false;
 	useImaginaryTime = useImag;
 	cooling = useImaginaryTime ? 1 : cool;
 	useReal = useImaginaryTime ? 0 : 1;
-
 
 	int doubleDIM = sizeof(double) * DIM;
     X = (double *) malloc(doubleDIM);
@@ -30,15 +29,8 @@ void Chamber::setup(int size, double ginput, double deltat, bool useImag, double
 	kX = (double *) malloc(doubleDIM);
 	kY = (double *) malloc(doubleDIM);
 
-    atomNumber = 1e6;
-	mass = 3.8e-26; //Rb 87 mass, kg
-	a_s = 5.3e-9;
-    omegaZ = 10;
-    omega = 1;
-	g = ginput * sqrt( mass * omegaZ / (2*PI*HBAR ));
-	Rxy = pow(15,0.2)*pow(atomNumber*a_s*sqrt(mass*omegaZ/HBAR),0.2);
-	a0 = sqrt(HBAR/(2*mass*omega));
-	fov = 7*Rxy*a0;
+	g = ginput;
+	fov = fovinput;
 	kfov = (PI/fov)*(DIM>>1);
     dx = fov/(DIM>>1);
     dk = PI/(fov);
@@ -121,8 +113,6 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 	// Copy to device
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
-
-
 
 
 

@@ -15,16 +15,14 @@ class Chamber
         double *X, *Y, *kX, *kY;
         double dx, dy, dk, dt;
         double fov, kfov;
-        double Rxy, omegaZ;
         double omega, epsilon;
-        double mass, a_s, a0, g;
+        double mass, g;
         double cooling, useReal;
         double cmapscale;
-        long atomNumber;
         bool useImaginaryTime, useRotatingFrame;
         cufftHandle fftPlan2D, fftPlan1D;
         
-        void setup(int size, double g, double deltat, bool useImag, double cool);
+        void setup(int size, double fovinput, double ginput, double deltat, bool useImag, double cool);
         void setHarmonicPotential(double o, double ep);
         // void InitializePotential(cuDoubleComplex *arr);
         void Cleanup();

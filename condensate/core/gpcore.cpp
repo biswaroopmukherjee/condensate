@@ -29,8 +29,8 @@ namespace gpcore {
 
 
 // Set the spatial grid size of the system
-void Setup(int size, double g, double deltat, bool useImag, double cool) {
-  gpcore::chamber.setup(size, g, deltat, useImag, cool);
+void Setup(int size,  double fov, double g, double deltat, bool useImag, double cool) {
+  gpcore::chamber.setup(size, fov,  g, deltat, useImag, cool);
 }
 
 
@@ -58,11 +58,12 @@ void RotatingFrame(int size, double *omega_r){
 
 
 // evolve the wavefunction
-void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show) {
+void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, bool show, int skip, double vmax) {
 
   printf("\n\n Starting GP... \n\n");
   render::startOpenGL();
   gpcore::Psi.Initialize(arr);
+  gpcore::chamber.cmapscale = vmax;
 
   for( unsigned long a = 0; a < steps; a++ ) {
 
