@@ -9,6 +9,7 @@ void Setup(int size, double fov, double g, double deltat, bool useImag, double c
 void SetHarmonicPotential(double omega, double epsilon);
 void GetPotential(int vsizeX, int vsizeY, double *V);
 void RotatingFrame(int size, double *omega_r);
+void AbsorbingBoundaryConditions(double strength, double radius);
 void Evolve(int sizeX, int sizeY, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax);
 
 namespace gpcore 

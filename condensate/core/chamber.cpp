@@ -115,6 +115,22 @@ void Chamber::setHarmonicPotential(double o, double ep) {
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
 
+void Chamber::AbsorbingBoundaryConditions(double strength, double radius) {
+	unsigned int i, j;
+	double V_abc, rfromcenter, box_sharpness;
+	box_sharpness = radius/10;
+	for( i=0; i<DIM; i++ ){
+		for( j=0; j<DIM; j++){
+			rfromcenter = pow((pow(X[i],2) + pow(X[j],2)),0.5);
+			V_abc = strength * 1e-5 * 0.5*mass*( erf( (rfromcenter-radius)/box_sharpness) +1 );
+			hostExpPotential[(i*DIM + j)].x *= exp( -V_abc * useReal*dt/(2*HBAR));
+			hostExpPotential[(i*DIM + j)].y *= exp( -V_abc * useReal*dt/(2*HBAR));
+		}
+	}
+	// Copy to device
+    checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
+}
+
 
 
 void Chamber::Cleanup()

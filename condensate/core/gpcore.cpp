@@ -56,6 +56,10 @@ void RotatingFrame(int size, double *omega_r){
   }
 };
 
+// Set up absorbing boundary conditions at a radius
+void AbsorbingBoundaryConditions(double strength, double radius) {
+  gpcore::chamber.AbsorbingBoundaryConditions(strength, radius);
+}
 
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
@@ -71,6 +75,7 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
       gpcore::Psi.MomentumSpaceStep();
       gpcore::Psi.RealSpaceHalfStep();
       if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a);
+      if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
       gpcore::Psi.Renormalize();
       if ((a%skip == 0) && show) glutMainLoopEvent();
    }

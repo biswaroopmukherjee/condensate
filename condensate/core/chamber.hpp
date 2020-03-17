@@ -24,6 +24,7 @@ class Chamber
         
         void setup(int size, double fov, double g, double deltat, bool useImag, double cool);
         void setHarmonicPotential(double o, double ep);
+        void AbsorbingBoundaryConditions(double strength, double radius);
         // void InitializePotential(cuDoubleComplex *arr);
         void Cleanup();
     
