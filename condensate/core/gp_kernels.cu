@@ -190,7 +190,6 @@ void gaugefieldKernelLauncher(double omegaR,
 
 
 
-
 // Density psi
 __global__ 
 void density_psi(cuDoubleComplex *devPsi, double *density, int w, int h) {
@@ -201,6 +200,8 @@ void density_psi(cuDoubleComplex *devPsi, double *density, int w, int h) {
 
     density[i] = complexMagnitudeSquared(devPsi[i]);
 }
+
+
 //Normalization
 __global__ 
 void scalarDiv_wfcNorm(cuDoubleComplex *in, double dr, double* pSum, cuDoubleComplex *out, int w, int h){
@@ -215,29 +216,21 @@ void scalarDiv_wfcNorm(cuDoubleComplex *in, double dr, double* pSum, cuDoubleCom
     result.y = (in[i].y/norm);
     out[i] = result;
 }
-// Indexing for parallel summation
-__device__ unsigned int getGid3d3d(){
-    int blockId = blockIdx.x + blockIdx.y * gridDim.x
-                  + gridDim.x * gridDim.y * blockIdx.z;
-    int threadId = blockId * (blockDim.x * blockDim.y * blockDim.z)
-                   + (threadIdx.y * blockDim.x)
-                   + (threadIdx.z * (blockDim.x * blockDim.y)) + threadIdx.x;
-    return threadId;
-}
+
+
 /**
  * Routine for parallel summation. Can be looped over from host.
+ * From GPUE-group (https://github.com/GPUE-group/GPUE)
  */
  __global__ void multipass(double* input, double* output){
     unsigned int tid = threadIdx.x + threadIdx.y*blockDim.x
                        + threadIdx.z * blockDim.x * blockDim.y;
     unsigned int bid = blockIdx.x + blockIdx.y * gridDim.x
                        + gridDim.x * gridDim.y * blockIdx.z;
+    unsigned int gid = bid * (blockDim.x * blockDim.y * blockDim.z)
+                    + (threadIdx.y * blockDim.x)
+                    + (threadIdx.z * (blockDim.x * blockDim.y)) + threadIdx.x;
 
-    //unsigned int tid = getTid3d3d();
-    //unsigned int bid = getBid3d3d();
-    // printf("bid0=%d\n",bid);
-
-    unsigned int gid = getGid3d3d();
     extern __shared__ double sdatad[];
     sdatad[tid] = input[gid];
     __syncthreads();

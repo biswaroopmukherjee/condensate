@@ -65,7 +65,7 @@ void AbsorbingBoundaryConditions(double strength, double radius) {
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
 
   printf("\n\n Starting GP... \n\n");
-  render::startOpenGL();
+  if (show) render::startOpenGL();
   gpcore::Psi.Initialize(arr);
   gpcore::chamber.cmapscale = vmax;
 
@@ -76,11 +76,10 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
       gpcore::Psi.RealSpaceHalfStep();
       if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a);
       if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
-      gpcore::Psi.Renormalize();
       if ((a%skip == 0) && show) glutMainLoopEvent();
    }
   
-  render::cleanup();
+  if (show) render::cleanup();
   gpcore::Psi.ExportToVariable(arr);
   gpcore::Psi.Cleanup();
   gpcore::chamber.Cleanup();
