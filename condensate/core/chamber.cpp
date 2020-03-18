@@ -9,6 +9,7 @@
 #include "defines.h"
 #include "chamber.hpp"
 #include "helper_cudagl.h"
+#include "gp_kernels.h"
 
 
 // setup for the size of the grid, the kinetic part, and other parameters
@@ -112,6 +113,7 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 		}
 	}
 	// Copy to device
+    checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
 
@@ -131,7 +133,10 @@ void Chamber::AbsorbingBoundaryConditions(double strength, double radius) {
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 }
 
+void Chamber::Spoon(double strength, double radius, int2 pos) {
+    spoonKernelLauncher(devPotential, devExpPotential, 0.5*mass*strength, pos, DIM, DIM); // kernel to rewrite spoon and devexppotential
 
+}
 
 void Chamber::Cleanup()
 {
