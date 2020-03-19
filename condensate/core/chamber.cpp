@@ -113,7 +113,7 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 		}
 	}
 	// Copy to device
-    checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
+    // checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
 
@@ -133,20 +133,26 @@ void Chamber::AbsorbingBoundaryConditions(double strength, double radius) {
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 }
 
-void Chamber::Spoon(double strength, double radius, int2 pos) {
-    spoonKernelLauncher(devPotential, devExpPotential, 0.5*mass*strength, pos, DIM, DIM); // kernel to rewrite spoon and devexppotential
+// void Chamber::Spoon(double strength, double radius, int2 pos) {
+//     spoonKernelLauncher(devPotential, devExpPotential, 0.5*mass*strength, pos, DIM, DIM); // kernel to rewrite spoon and devexppotential
 
-}
+// }
 
 void Chamber::Cleanup()
 {
+	cudaDeviceSynchronize();
     free(Kinetic); free(hostExpKinetic); 
 	free(Potential); free(hostExpPotential);
+	free(omegaR);
+	free(XkY); free(YkX);
+	free(X); free(Y);
+	free(kX); free(kY);
     cudaFree(devExpPotential);
     cudaFree(devExpKinetic);
     cudaFree(devXkY);
     cudaFree(devYkX);
     cudaFree(devExpXkY);
     cudaFree(devExpYkX);
+	cufftDestroy(fftPlan1D); cufftDestroy(fftPlan2D);
     checkCudaErrors(cudaDeviceReset());
 }

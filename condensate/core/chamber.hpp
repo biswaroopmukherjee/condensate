@@ -8,7 +8,8 @@ class Chamber
 {
     public:
         int DIM, DS;
-        double *Potential, *Kinetic, *devPotential, *XkY, *YkX, *devXkY, *devYkX, *omegaR;
+        double *Potential, *Kinetic, *XkY, *YkX, *devXkY, *devYkX, *omegaR;
+        // double *devPotential;
         cuDoubleComplex *devExpPotential, *hostExpPotential;
         cuDoubleComplex *devExpKinetic, *hostExpKinetic;
         cuDoubleComplex *devExpXkY, *devExpYkX;

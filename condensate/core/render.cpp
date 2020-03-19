@@ -90,27 +90,24 @@ namespace render {
     }
 
 
-    void click(int button, int updown, int x, int y)
-    {
-        lastx = x;
-        lasty = y;
-        clicked = !clicked;
-    }
+    // void click(int button, int updown, int x, int y)
+    // {
+    //     lastx = x;
+    //     lasty = y;
+    //     clicked = !clicked;
+    // }
 
-    void motion(int x, int y)
-{
+    // void motion(int x, int y)
+    // {
+    //     if (clicked)
+    //     {
+    //         printf("\n x=%i\n");
+    //         lastx = x;
+    //         lasty = y;
+    //     }
 
-
-    if (clicked)
-    {
-        
-        printf("\n x=%i\n");
-        lastx = x;
-        lasty = y;
-    }
-
-    // glutPostRedisplay();
-}
+    //     glutPostRedisplay();
+    // }
 
 
     void keyboard(unsigned char key, int x, int y) {
@@ -167,8 +164,8 @@ namespace render {
         glutCreateWindow("Compute Stable Fluids");
 
         glutDisplayFunc(display);
-        glutMouseFunc(click);
-        glutMotionFunc(motion);
+        // glutMouseFunc(click);
+        // glutMotionFunc(motion);
         glutKeyboardFunc(keyboard);
         glutSpecialFunc(special);
         glutCloseFunc(cleanup);
