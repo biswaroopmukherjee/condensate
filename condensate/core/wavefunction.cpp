@@ -55,6 +55,7 @@ void Wavefunction::MomentumSpaceStep() {
     momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpKinetic, devPsi, DIM, DIM);
     cufftExecZ2Z(gpcore::chamber.fftPlan2D, devPsi, devPsi, CUFFT_INVERSE);  
     multKernelLauncher(devPsi, 1.0/DIM, DIM, DIM); // fft renorm
+    cudaDeviceSynchronize();
 }
 
 void Wavefunction::Renormalize() {
@@ -94,6 +95,7 @@ void Wavefunction::RotatingFrame(unsigned long timestep) {
         multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
         cufftExecZ2Z(gpcore::chamber.fftPlan2D,devPsi,devPsi,CUFFT_INVERSE); //2D Inverse
         multKernelLauncher(devPsi, renorm2D, DIM, DIM); // fft renorm
+        cudaDeviceSynchronize();
         break;
 
         case 1:	// odd step
@@ -112,6 +114,7 @@ void Wavefunction::RotatingFrame(unsigned long timestep) {
         momentumspaceKernelLauncher(devPsi, gpcore::chamber.devExpXkY, devPsi, DIM, DIM);
         cufftExecZ2Z(gpcore::chamber.fftPlan1D,devPsi,devPsi,CUFFT_INVERSE);
         multKernelLauncher(devPsi, renorm1D, DIM, DIM); // fft renorm;
+        cudaDeviceSynchronize();
         break;
     }
 
@@ -130,4 +133,5 @@ void Wavefunction::Cleanup()
 {
     free(hostPsi);
     checkCudaErrors(cudaFree(devPsi));
+    checkCudaErrors(cudaFree(devDensity));
 }

@@ -1,3 +1,4 @@
+*figures/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -106,3 +107,5 @@ venv.bak/
 
 # vscode
 .vscode
+
+*.hdf5

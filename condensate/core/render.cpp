@@ -33,6 +33,9 @@ namespace render {
     GLuint tex = 0; // OpenGL texture object
     struct cudaGraphicsResource *cuda_pbo_resource;
     int DIM = gpcore::chamber.DIM;
+    static int lastx = DIM/2, lasty = DIM/2;
+    static int clicked  = 0;
+
 
     // Use a class to store these. then pass the class in?
 
@@ -87,6 +90,24 @@ namespace render {
     }
 
 
+    // void click(int button, int updown, int x, int y)
+    // {
+    //     lastx = x;
+    //     lasty = y;
+    //     clicked = !clicked;
+    // }
+
+    // void motion(int x, int y)
+    // {
+    //     if (clicked)
+    //     {
+    //         printf("\n x=%i\n");
+    //         lastx = x;
+    //         lasty = y;
+    //     }
+
+    //     glutPostRedisplay();
+    // }
 
 
     void keyboard(unsigned char key, int x, int y) {
@@ -143,6 +164,8 @@ namespace render {
         glutCreateWindow("Compute Stable Fluids");
 
         glutDisplayFunc(display);
+        // glutMouseFunc(click);
+        // glutMotionFunc(motion);
         glutKeyboardFunc(keyboard);
         glutSpecialFunc(special);
         glutCloseFunc(cleanup);
