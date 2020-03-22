@@ -18,6 +18,7 @@
 #include "helper_cudagl.h"
 #include "render.hpp"
 #include "wavefunction.hpp"
+#include "render_controls.hpp"
 
 
 namespace render {
@@ -33,8 +34,6 @@ namespace render {
     GLuint tex = 0; // OpenGL texture object
     struct cudaGraphicsResource *cuda_pbo_resource;
     int DIM = gpcore::chamber.DIM;
-    static int lastx = DIM/2, lasty = DIM/2;
-    static int clicked  = 0;
 
 
     // Use a class to store these. then pass the class in?
@@ -90,57 +89,6 @@ namespace render {
     }
 
 
-    // void click(int button, int updown, int x, int y)
-    // {
-    //     lastx = x;
-    //     lasty = y;
-    //     clicked = !clicked;
-    // }
-
-    // void motion(int x, int y)
-    // {
-    //     if (clicked)
-    //     {
-    //         printf("\n x=%i\n");
-    //         lastx = x;
-    //         lasty = y;
-    //     }
-
-    //     glutPostRedisplay();
-    // }
-
-
-    void keyboard(unsigned char key, int x, int y) {
-        switch (key) {
-        case 27:
-            glutDestroyWindow(glutGetWindow());
-            return;
-            break;
-
-
-        default:
-            break;
-        }
-    }
-
-    void special(int key, int x, int y)
-    {
-        switch (key)
-        {
-
-            case GLUT_KEY_DOWN:
-                gpcore::chamber.cmapscale-=1e6;
-                break;
-
-            case GLUT_KEY_UP:
-                gpcore::chamber.cmapscale+=1e6;
-                break;
-        }
-
-        glutPostRedisplay();
-    }
-
-
     void cleanup(void) 
     {
         if (pbo) {
@@ -164,8 +112,8 @@ namespace render {
         glutCreateWindow("Compute Stable Fluids");
 
         glutDisplayFunc(display);
-        // glutMouseFunc(click);
-        // glutMotionFunc(motion);
+        glutMouseFunc(click);
+        glutMotionFunc(motion);
         glutKeyboardFunc(keyboard);
         glutSpecialFunc(special);
         glutCloseFunc(cleanup);

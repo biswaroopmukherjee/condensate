@@ -10,6 +10,7 @@ void SetHarmonicPotential(double omega, double epsilon);
 void GetPotential(int vsizeX, int vsizeY, double *V);
 void RotatingFrame(int size, double *omega_r);
 void AbsorbingBoundaryConditions(double strength, double radius);
+void SetupSpoon(double strength, double radius);
 void Evolve(int sizeX, int sizeY, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax);
 
 namespace gpcore 

@@ -18,7 +18,9 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
     DS = DIM*DIM;
 	dt = deltat;
 	mass = 3.8e-26; // Na-23 mass
+	spoon1.strength = 0;
 
+	stopSim = false;
 	useRotatingFrame = false;
 	useImaginaryTime = useImag;
 	cooling = useImaginaryTime ? 1 : cool;
@@ -62,6 +64,7 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	hostExpKinetic   = (cuDoubleComplex *) malloc(cudoubleDS);
 	hostExpPotential = (cuDoubleComplex *) malloc(cudoubleDS);
     
+	cudaMalloc((void**) &devPotential, doubleDS);
 	cudaMalloc((void**) &devExpPotential, cudoubleDS);
 	cudaMalloc((void**) &devExpKinetic, cudoubleDS);
 	cudaMalloc((void**) &devXkY, doubleDS);
@@ -113,7 +116,6 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 		}
 	}
 	// Copy to device
-    // checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
 
@@ -133,10 +135,18 @@ void Chamber::AbsorbingBoundaryConditions(double strength, double radius) {
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 }
 
-// void Chamber::Spoon(double strength, double radius, int2 pos) {
-//     spoonKernelLauncher(devPotential, devExpPotential, 0.5*mass*strength, pos, DIM, DIM); // kernel to rewrite spoon and devexppotential
+void Chamber::SetupSpoon(double strength, double radius) {
+	spoon1.strength = 1e-6 * 0.5 * mass * strength;
+	spoon1.strengthSetting = spoon1.strength; // this is changed depending on if the spoon is on or not
+	spoon1.radius = (int) floor(radius / dx);
+	spoon1.pos.x = 0;
+	spoon1.pos.y = 0;
+    checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
+}
 
-// }
+void Chamber::Spoon() {
+    spoonKernelLauncher(devPotential, devExpPotential, spoon1, dt, useReal, cooling, DIM, DIM); // kernel to rewrite spoon and devexppotential
+}
 
 void Chamber::Cleanup()
 {
@@ -149,6 +159,7 @@ void Chamber::Cleanup()
 	free(kX); free(kY);
     cudaFree(devExpPotential);
     cudaFree(devExpKinetic);
+	cudaFree(devPotential);
     cudaFree(devXkY);
     cudaFree(devYkX);
     cudaFree(devExpXkY);

@@ -62,9 +62,14 @@ void Wavefunction::Renormalize() {
     parSum(devPsi, devDensity, gpcore::chamber.dx, DIM, DIM);
 }
 
-void Wavefunction::RotatingFrame(unsigned long timestep) {
+void Wavefunction::RotatingFrame(unsigned long timestep, unsigned long steps) {
     int DIM = gpcore::chamber.DIM;
-    double omega = gpcore::chamber.omegaR[timestep];
+    double omega;
+    if (steps==0) {
+        omega = gpcore::chamber.omegaR[0];
+    } else {
+        omega = gpcore::chamber.omegaR[timestep];
+    }
     double renorm1D = 1.0 / pow(DIM, 0.5);
     double renorm2D = 1.0 / DIM;
     

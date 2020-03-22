@@ -15,7 +15,7 @@ class Wavefunction
         void RealSpaceHalfStep();
         void MomentumSpaceStep();
         void Renormalize();
-        void RotatingFrame(unsigned long timestep);
+        void RotatingFrame(unsigned long timestep, unsigned long steps);
         void MapColors(uchar4 *d_out);
         void ExportToVariable(cuDoubleComplex *arr);
         void Cleanup();

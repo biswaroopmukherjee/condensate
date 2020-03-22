@@ -17,6 +17,7 @@
  
 #include "defines.h"
 #include "gp_kernels.h"
+#include "chamber.hpp"
 
 // __constant__ double gDenConst = 0.02*6.6741e-40;//Evaluted in MATLAB: N*4*HBAR*HBAR*PI*(4.67e-9/mass)*sqrt(mass*(omegaZ)/(2*PI*HBAR))
 
@@ -284,6 +285,34 @@ void parSum(cuDoubleComplex *devPsi, double *density, double dx, int w, int h){
     std::cout << (sum[0]) << '\n';
 */
     scalarDiv_wfcNorm<<<gridSize, threads>>>(devPsi, dg, density, devPsi, w, h);
+}
+
+
+
+// Spoon
+__global__
+void spoonKernel(double *devPotential, cuDoubleComplex *devExpPotential, spoonProps spoonP,
+                 double dt, double useReal, double cooling, int w, int h){
+    const int tidx = blockIdx.x*blockDim.x + threadIdx.x;
+    const int tidy = blockIdx.y*blockDim.y + threadIdx.y;
+    if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
+    const int i = tidx + tidy * w; // 1D indexing
+    const int dist = (tidx - spoonP.pos.x) * (tidx - spoonP.pos.x) + (tidy - spoonP.pos.y) * (tidy - spoonP.pos.y);
+    double spoon = spoonP.strength * exp( - pow(dist, 2) / pow(spoonP.radius, 2) );
+    
+    double devPotSpoon = devPotential[i];
+    devPotSpoon += spoon;
+    devExpPotential[i].x =  exp( -devPotSpoon * cooling * dt/(2*HBAR)) * 
+                            cos( -devPotSpoon * useReal * dt/(2*HBAR));
+    devExpPotential[i].y =  exp( -devPotSpoon * cooling * dt/(2*HBAR)) * 
+                            sin( -devPotSpoon * useReal * dt/(2*HBAR));
+}
+
+void spoonKernelLauncher(double *devPotential, cuDoubleComplex *devExpPotential, spoonProps spoonP,
+                        double dt, double useReal, double cooling, int w, int h) {
+    const dim3 gridSize (iDivUp(w, TILEX), iDivUp(h, TILEY));
+    const dim3 blockSize(TILEX, TILEY);
+    spoonKernel<<<gridSize, blockSize>>>(devPotential, devExpPotential, spoonP, dt, useReal, cooling, w, h);
 }
 
 

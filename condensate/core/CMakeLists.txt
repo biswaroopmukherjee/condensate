@@ -33,6 +33,7 @@ cuda_add_library(gpcoregpu
     chamber.hpp
     chamber.cpp
  
+    render_controls.hpp
     render.hpp
     render.cpp
 

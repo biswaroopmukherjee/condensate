@@ -3,7 +3,7 @@
 
 #include <cuda.h>
 #include <cufft.h>
-
+#include "chamber.hpp"
 
 
 
@@ -24,6 +24,8 @@ void momentumspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devEx
 void gaugefieldKernelLauncher(double omega, 
                               double *devXkY, double *devYkX, cuDoubleComplex *devExpXkY, cuDoubleComplex *devExpYkX,
                               double dt, double useReal, double cooling, int w, int h);
+void spoonKernelLauncher(double *devPotential, cuDoubleComplex *devExpPotential, spoonProps spoonP,
+                        double dt, double useReal, double cooling, int w, int h);
 void parSum(cuDoubleComplex *devPsi, double *density, double dx, int w, int h);
 
 #endif

@@ -61,6 +61,11 @@ void AbsorbingBoundaryConditions(double strength, double radius) {
   gpcore::chamber.AbsorbingBoundaryConditions(strength, radius);
 }
 
+// Set up a spoon
+void SetupSpoon(double strength, double radius) {
+  gpcore::chamber.SetupSpoon(strength, radius);
+}
+
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
 
@@ -68,15 +73,20 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
   if (show) render::startOpenGL();
   gpcore::Psi.Initialize(arr);
   gpcore::chamber.cmapscale = vmax;
+  unsigned long a=0;
 
-  for( unsigned long a = 0; a < steps; a++ ) {
-
-      gpcore::Psi.RealSpaceHalfStep(); 
-      gpcore::Psi.MomentumSpaceStep();
-      gpcore::Psi.RealSpaceHalfStep();
-      if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a);
-      if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
-      if ((a%skip == 0) && show) glutMainLoopEvent();
+  while (!gpcore::chamber.stopSim) 
+  {
+    // printf("\n x=%i\n", gpcore::chamber.spoon1.pos.x);
+    gpcore::Psi.RealSpaceHalfStep(); 
+    gpcore::Psi.MomentumSpaceStep();
+    gpcore::Psi.RealSpaceHalfStep();
+    if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a, steps);
+    if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
+    if (gpcore::chamber.spoon1.strength != 0) gpcore::chamber.Spoon();
+    if ((a%skip == 0) && show) glutMainLoopEvent();
+    a++;
+    if (a==steps) gpcore::chamber.stopSim = true; 
    }
   
   if (show) render::cleanup();
