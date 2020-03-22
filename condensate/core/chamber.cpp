@@ -116,6 +116,7 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 		}
 	}
 	// Copy to device
+	checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
 
@@ -141,7 +142,6 @@ void Chamber::SetupSpoon(double strength, double radius) {
 	spoon1.radius = (int) floor(radius / dx);
 	spoon1.pos.x = 0;
 	spoon1.pos.y = 0;
-    checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
 }
 
 void Chamber::Spoon() {
