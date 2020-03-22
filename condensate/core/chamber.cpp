@@ -153,7 +153,7 @@ void Chamber::Cleanup()
 	cudaDeviceSynchronize();
     free(Kinetic); free(hostExpKinetic); 
 	free(Potential); free(hostExpPotential);
-	free(omegaR);
+	if (useRotatingFrame) free(omegaR);
 	free(XkY); free(YkX);
 	free(X); free(Y);
 	free(kX); free(kY);
