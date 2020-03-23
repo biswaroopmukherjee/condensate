@@ -27,18 +27,13 @@ namespace gpcore {
   Wavefunction Psi;
 }
 
-
 // Set the spatial grid size of the system
 void Setup(int size, double fov, double g, double deltat, bool useImag, double cool) {
   gpcore::chamber.setup(size, fov, g, deltat, useImag, cool);
 }
 
-
 // Set the parameters of the harmonic potential, and use that as the current potential
-void SetHarmonicPotential(double omega, double epsilon) {
-  gpcore::chamber.setHarmonicPotential(omega, epsilon);
-}
-
+void SetHarmonicPotential(double omega, double epsilon) {gpcore::chamber.setHarmonicPotential(omega, epsilon);}
 
 // Extract the potential. Todo: import potential, timedependent: make an object, like wavefunction
 void GetPotential(int sizeX, int sizeY, double *V){
@@ -62,46 +57,40 @@ void AbsorbingBoundaryConditions(double strength, double radius) {
 }
 
 // Set up a spoon
-void SetupSpoon(double strength, double radius) {
-  gpcore::chamber.SetupSpoon(strength, radius);
-}
+void SetupSpoon(double strength, double radius) {gpcore::chamber.SetupSpoon(strength, radius);}
 
 // Set up a leap motion tracker
-void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy) {
+void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy, bool controlstrength) {
   gpcore::chamber.useLeapMotion = true;
   gpcore::chamber.LeapProps = {centerx,centery, zoomx, zoomy};
-  printf("\ncenter = %.3f\n", gpcore::chamber.LeapProps.x);
+  gpcore::chamber.useLeapZ = controlstrength;
 }
+
 
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
-
-  printf("\n\n Starting GP... \n\n");
-  if (show) render::startOpenGL();
-  gpcore::Psi.Initialize(arr);
-  gpcore::chamber.cmapscale = vmax;
-  unsigned long a=0;
-
+  std::cout << "Starting GP..." << std::endl;
+  if (show) {
+    render::startOpenGL();
+    gpcore::chamber.cmapscale = vmax;
+  }
   Controller controller;
 
+  gpcore::Psi.Initialize(arr);
+  unsigned long a=0;
 
   while (!gpcore::chamber.stopSim) 
   {
-    // printf("\n x=%i\n", gpcore::chamber.spoon1.pos.x);
     gpcore::Psi.RealSpaceHalfStep(); 
     gpcore::Psi.MomentumSpaceStep();
     gpcore::Psi.RealSpaceHalfStep();
     if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a, steps);
     if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
     if (gpcore::chamber.spoon1.strength != 0) gpcore::chamber.Spoon();
+    if (gpcore::chamber.useLeapMotion) LeapControl(controller);
     if ((a%skip == 0) && show) glutMainLoopEvent();
     a++;
     if (a==steps) gpcore::chamber.stopSim = true; 
-    
-    if (gpcore::chamber.useLeapMotion) printfingers(controller);
-
-
-
    }
   
   if (show) render::cleanup();
@@ -109,5 +98,5 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
   gpcore::Psi.Cleanup();
   gpcore::chamber.Cleanup();
 
-  printf("\n Done \n\n");
+  std::cout << "Done" << std::endl;
 }
