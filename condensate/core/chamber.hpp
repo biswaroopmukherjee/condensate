@@ -31,6 +31,8 @@ class Chamber
         bool useImaginaryTime, useRotatingFrame;
         bool stopSim;
         spoonProps spoon1;
+        bool useLeapMotion;
+        double4 LeapProps;
         cufftHandle fftPlan2D, fftPlan1D;
 
 

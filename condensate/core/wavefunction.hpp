@@ -17,6 +17,7 @@ class Wavefunction
         void Renormalize();
         void RotatingFrame(unsigned long timestep, unsigned long steps);
         void MapColors(uchar4 *d_out);
+        
         void ExportToVariable(cuDoubleComplex *arr);
         void Cleanup();
 

@@ -20,7 +20,7 @@
 #include "defines.h"
 #include "gp_kernels.h"
 #include "helper_cudagl.h"
-
+#include "leap_controls.hpp"
 
 namespace gpcore {
   Chamber chamber;
@@ -66,6 +66,13 @@ void SetupSpoon(double strength, double radius) {
   gpcore::chamber.SetupSpoon(strength, radius);
 }
 
+// Set up a leap motion tracker
+void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy) {
+  gpcore::chamber.useLeapMotion = true;
+  gpcore::chamber.LeapProps = {centerx,centery, zoomx, zoomy};
+  printf("\ncenter = %.3f\n", gpcore::chamber.LeapProps.x);
+}
+
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
 
@@ -74,6 +81,9 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
   gpcore::Psi.Initialize(arr);
   gpcore::chamber.cmapscale = vmax;
   unsigned long a=0;
+
+  Controller controller;
+
 
   while (!gpcore::chamber.stopSim) 
   {
@@ -87,6 +97,11 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
     if ((a%skip == 0) && show) glutMainLoopEvent();
     a++;
     if (a==steps) gpcore::chamber.stopSim = true; 
+    
+    if (gpcore::chamber.useLeapMotion) printfingers(controller);
+
+
+
    }
   
   if (show) render::cleanup();
