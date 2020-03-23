@@ -69,7 +69,7 @@ void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy,
 
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
-  std::cout << "Starting GP..." << std::endl;
+  std::cout << "\nStarting GP..." << std::endl;
   if (show) {
     render::startOpenGL();
     gpcore::chamber.cmapscale = vmax;
@@ -91,6 +91,8 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
     if ((a%skip == 0) && show) glutMainLoopEvent();
     a++;
     if (a==steps) gpcore::chamber.stopSim = true; 
+
+    // glutSetWindowTitle("hi");
    }
   
   if (show) render::cleanup();
@@ -98,5 +100,5 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
   gpcore::Psi.Cleanup();
   gpcore::chamber.Cleanup();
 
-  std::cout << "Done" << std::endl;
+  std::cout << "Done\n" << std::endl;
 }

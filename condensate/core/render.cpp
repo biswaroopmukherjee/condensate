@@ -36,8 +36,6 @@ namespace render {
     int DIM = gpcore::chamber.DIM;
 
 
-    // Use a class to store these. then pass the class in?
-
     void startTimer() {
         sdkCreateTimer(&timer);
         sdkResetTimer(&timer);
@@ -67,7 +65,7 @@ namespace render {
 
     void display(void) {
         int DIM = gpcore::chamber.DIM;
-        sdkStartTimer(&timer);
+        // sdkStartTimer(&timer);
         render();
         drawTexture();
         sdkStopTimer(&timer);// Finish timing before swap buffers to avoid refresh sync
@@ -84,6 +82,7 @@ namespace render {
             fpsLimit = (int)std::max(ifps, 1.f);
             sdkResetTimer(&timer);
         }
+        sdkStartTimer(&timer);
 
         glutPostRedisplay();
     }
