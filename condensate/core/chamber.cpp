@@ -19,6 +19,7 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	dt = deltat;
 	mass = 3.8e-26; // Na-23 mass
 	spoon1.strength = 0;
+	useLeapMotion = false;
 
 	stopSim = false;
 	useRotatingFrame = false;
