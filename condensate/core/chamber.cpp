@@ -121,6 +121,26 @@ void Chamber::setHarmonicPotential(double o, double ep) {
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 };
 
+// setup for edge potential
+void Chamber::setEdgePotential(double strength, double radius, double sharpness) {
+	double rfromcenter;
+	unsigned int i, j;
+	for( i=0; i<DIM; i++ ){
+		for( j=0; j<DIM; j++){
+			rfromcenter = pow((pow(X[i],2) + pow(X[j],2)),0.5);
+			Potential[(i*DIM + j)] += strength * 1e-5 * 0.5*mass*( erf( (rfromcenter-radius)/sharpness) +1 );
+			hostExpPotential[(i*DIM + j)].x = exp( -Potential[(i*DIM + j)] * cooling*dt/(2*HBAR)) *
+											  cos( -Potential[(i*DIM + j)] * useReal*dt/(2*HBAR));
+			hostExpPotential[(i*DIM + j)].y = exp( -Potential[(i*DIM + j)] * cooling*dt/(2*HBAR)) *
+											  sin( -Potential[(i*DIM + j)] * useReal*dt/(2*HBAR));
+		}
+	}
+	// Copy to device
+	checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
+}
+
+// ABC at some radius
 void Chamber::AbsorbingBoundaryConditions(double strength, double radius) {
 	unsigned int i, j;
 	double V_abc, rfromcenter, box_sharpness;

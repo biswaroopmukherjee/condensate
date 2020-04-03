@@ -11,6 +11,7 @@ struct spoonProps {
     int2 pos;
 };
 
+
 // Handles the simulation parameters and potentials.
 class Chamber
 {
@@ -39,6 +40,7 @@ class Chamber
         
         void setup(int size, double fov, double g, double deltat, bool useImag, double cool);
         void setHarmonicPotential(double o, double ep);
+        void setEdgePotential(double strength, double radius, double sharpness);
         void AbsorbingBoundaryConditions(double strength, double radius);
         void SetupSpoon(double strength, double radius);
         void Spoon();

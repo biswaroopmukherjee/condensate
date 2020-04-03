@@ -35,6 +35,9 @@ void Setup(int size, double fov, double g, double deltat, bool useImag, double c
 // Set the parameters of the harmonic potential, and use that as the current potential
 void SetHarmonicPotential(double omega, double epsilon) {gpcore::chamber.setHarmonicPotential(omega, epsilon);}
 
+// Set parameters of a circular edge potential
+void SetEdgePotential(double strength, double radius, double sharpness){gpcore::chamber.setEdgePotential(strength, radius, sharpness);}
+
 // Extract the potential. Todo: import potential, timedependent: make an object, like wavefunction
 void GetPotential(int sizeX, int sizeY, double *V){
   for( unsigned int i=0; i<gpcore::chamber.DS; i++ ) {

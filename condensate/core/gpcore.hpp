@@ -7,6 +7,7 @@
 
 void Setup(int size, double fov, double g, double deltat, bool useImag, double cool);
 void SetHarmonicPotential(double omega, double epsilon);
+void SetEdgePotential(double strength, double radius, double sharpness);
 void GetPotential(int vsizeX, int vsizeY, double *V);
 void RotatingFrame(int size, double *omega_r);
 void AbsorbingBoundaryConditions(double strength, double radius);
