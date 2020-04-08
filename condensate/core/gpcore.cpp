@@ -65,7 +65,7 @@ void SetupSpoon(double strength, double radius) {gpcore::chamber.SetupSpoon(stre
 // Set up a leap motion tracker
 void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy, bool controlstrength) {
   gpcore::chamber.useLeapMotion = true;
-  gpcore::chamber.LeapProps = {centerx,centery, zoomx, zoomy};
+  gpcore::chamber.LeapProps = {centerx, centery, zoomx, zoomy};
   gpcore::chamber.useLeapZ = controlstrength;
 }
 
