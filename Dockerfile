@@ -31,6 +31,7 @@ WORKDIR /gp
 
 # Build condensate
 RUN cd condensate/core \
+    && rm -rf build \
     && mkdir build \
     && cd build \
     && cmake ..\
