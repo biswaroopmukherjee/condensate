@@ -1,6 +1,6 @@
 _skbuild/
-# *figures/
-# *data/
+*figures/
+*data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
