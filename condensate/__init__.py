@@ -1,1 +1,1 @@
-from condensate import core
+from condensate.core import gpcore
