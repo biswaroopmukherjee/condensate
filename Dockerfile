@@ -18,7 +18,11 @@ RUN python3 -m pip --no-cache-dir install \
     pandas \ 
     scipy \
     tqdm \ 
-    Pillow
+    Pillow \
+    jupyter_contrib_nbextensions
+
+RUN jupyter contrib nbextension install --user \
+    && jupyter nbextension enable toc2/main
 
 # Make a symlink to numpy header files for SWIG
 RUN ln -s /usr/local/lib/python3.6/dist-packages/numpy/core/include/numpy /usr/include/numpy
