@@ -1,4 +1,4 @@
-!condensate/core/leap/libLeap.so
+
 _skbuild/
 *figures/
 *data/
@@ -10,6 +10,7 @@ __pycache__/
 
 # C extensions
 *.so
+!*libLeap.so
 
 # Distribution / packaging
 .Python
