@@ -16,7 +16,7 @@ then
             --env="DISPLAY" \
             --env="QT_X11_NO_MITSHM=1" \
             --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-            --runtime=nvidia \
+            --gpus all \
             --volume $(pwd)/notebooks:/gp/notebooks \
             -p 8888:8888\
             gp 
