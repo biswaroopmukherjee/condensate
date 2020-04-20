@@ -71,7 +71,8 @@ void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy,
 
 
 // evolve the wavefunction
-void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int skip, bool show, double vmax) {
+void Evolve(int sizex, int sizey, cuDoubleComplex *arr, 
+            unsigned long steps, int skip, bool show, double vmax, double energy) {
   std::cout << "\nStarting GP..." << std::endl;
   if (show) {
     render::startOpenGL();
@@ -99,6 +100,7 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr, unsigned long steps, int
    }
   
   if (show) render::cleanup();
+  gpcore::Psi.CalculateEnergy(energy);
   gpcore::Psi.ExportToVariable(arr);
   gpcore::Psi.Cleanup();
   gpcore::chamber.Cleanup();
