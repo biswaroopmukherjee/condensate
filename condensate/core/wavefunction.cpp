@@ -62,6 +62,11 @@ void Wavefunction::Renormalize() {
     parSum(devPsi, devDensity, gpcore::chamber.dx, DIM, DIM);
 }
 
+// void Wavefunction::CalculateEnergy(double energy) {
+//     energy = 0.;
+//     energyKernelLauncher(devPsi, gpcore::chamber.)
+// }
+
 void Wavefunction::RotatingFrame(unsigned long timestep, unsigned long steps) {
     int DIM = gpcore::chamber.DIM;
     double omega;

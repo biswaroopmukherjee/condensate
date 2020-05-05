@@ -64,6 +64,7 @@ void SetupSpoon(double strength, double radius) {gpcore::chamber.SetupSpoon(stre
 
 // Set up a leap motion tracker
 void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy, bool controlstrength) {
+  std::cout<< centerx<<centery<< zoomx<< zoomy<< std::endl;
   gpcore::chamber.useLeapMotion = true;
   gpcore::chamber.LeapProps = {centerx, centery, zoomx, zoomy};
   gpcore::chamber.useLeapZ = controlstrength;
@@ -72,7 +73,7 @@ void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy,
 
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, 
-            unsigned long steps, int skip, bool show, double vmax, double energy) {
+            unsigned long steps, int skip, bool show, double vmax) {
   std::cout << "\nStarting GP..." << std::endl;
   if (show) {
     render::startOpenGL();
@@ -100,7 +101,7 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr,
    }
   
   if (show) render::cleanup();
-  gpcore::Psi.CalculateEnergy(energy);
+  // gpcore::Psi.CalculateEnergy(energy);
   gpcore::Psi.ExportToVariable(arr);
   gpcore::Psi.Cleanup();
   gpcore::chamber.Cleanup();
