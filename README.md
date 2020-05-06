@@ -1,7 +1,9 @@
 # condensate
 Interactive GPU-accelerated numerical solutions of the GP equation. Written in C++/CUDA, wrapped in python using SWIG.
 
-+<img src="condensate.gif?raw=true" width="600px">
+<p align="center">
+  <img src="condensate.gif?raw=true" width="600px">
+</p>
 
 
 ## Usage
