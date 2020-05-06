@@ -64,7 +64,6 @@ void SetupSpoon(double strength, double radius) {gpcore::chamber.SetupSpoon(stre
 
 // Set up a leap motion tracker
 void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy, bool controlstrength) {
-  std::cout<< centerx<<centery<< zoomx<< zoomy<< std::endl;
   gpcore::chamber.useLeapMotion = true;
   gpcore::chamber.LeapProps = {centerx, centery, zoomx, zoomy};
   gpcore::chamber.useLeapZ = controlstrength;
@@ -97,7 +96,6 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr,
     a++;
     if (a==steps) gpcore::chamber.stopSim = true; 
 
-    // glutSetWindowTitle("hi");
    }
   
   if (show) render::cleanup();

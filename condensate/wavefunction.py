@@ -42,7 +42,7 @@ class Wavefunction():
     
     @property
     def phase(self):
-        self._phase = np.angle(self.Psi)
+        self._phase = np.angle(self.Psi) * (self.density >1)
         return self._phase
     
         
@@ -52,7 +52,7 @@ class Wavefunction():
         plt.show()
         
     def show_phase(self,):
-        a = plt.imshow(self.phase)
+        a = plt.imshow(self.phase, cmap='twilight')
         plt.colorbar()
         plt.show()
         

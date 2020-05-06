@@ -82,6 +82,7 @@ class Environment():
         return self._omegaz
     
     def rotating_frame(self, omegaR):
+        if type(omegaR)==float: omegaR = [omegaR]
         self.reference_frame = {'rotating': True, 'omegaR': omegaR}
     
     def lab_frame(self):
