@@ -27,7 +27,7 @@ In order to run a simple script with an interactive condensate (instead of the n
 
 ## Project overview
 
-We use a time splitting Fourier pseudospectral (TSSP) method to solve the time-dependent GP equation in 2D. See [here](https://cpb-us-w2.wpmucdn.com/blog.nus.edu.sg/dist/4/11813/files/2019/05/becreview.pdf) for more mathematical details. Note that there have been [many](http://gpelab.math.cnrs.fr/) [other](https://gpue-group.github.io/) implementations of a GP solver. 
+We use a time splitting pseudospectral (TSSP) method to solve the time-dependent GP equation in 2D. See [here](https://cpb-us-w2.wpmucdn.com/blog.nus.edu.sg/dist/4/11813/files/2019/05/becreview.pdf) for more mathematical details. Note that there have been [many](http://gpelab.math.cnrs.fr/) [other](https://gpue-group.github.io/) implementations of a GP solver. 
 
 The spirit of this project is to combine rapid experimentation with raw GPU compute performance. To this end, the heavy lifting is done by the CUDA kernels and C++ objects defined in `condensate/core`. In order to see the density in realtime, the wavefunction is rendered with an OpenGL pixelbuffer object. Since the rendering is done at the buffer refresh rate (tens of Hz) on the GPU, the performance overhead from the rendering is negligible. Rendering on the GPU is much faster than copying the wavefunction from the GPU to the host (CPU), and then to the disk for visualization. In order to access the C++ methods in a flexible manner, we use [SWIG](http://www.swig.org/) to generate python bindings. These are then called from jupyter notebook, and allows us to use a very simple API to run experiments.
 
