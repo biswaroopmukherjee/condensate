@@ -85,6 +85,9 @@ class Wavefunction():
         if self.env.edge['on']:
             gpcore.SetEdgePotential(self.env.edge['strength'], self.env.edge['radius'], self.env.edge['width'])
             
+        if self.env.use_custom_V:
+            gpcore.SetPotential(self.env.V)
+
         gpcore.GetPotential(self.env.V)
         
         if self.env.absorber['on']:

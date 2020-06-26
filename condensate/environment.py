@@ -40,6 +40,7 @@ class Environment():
         self.lb = np.sqrt(hbar / (2*mass *self.omega))
         
         self.V = np.zeros((DIM,DIM))
+        self.use_custom_V= False
         
         self.reference_frame = {'rotating': False, 'omegaR': [self.omega]}
         self.absorber = {'on': False, 'strength': 1, 'radius': self.fov/2}
@@ -56,6 +57,7 @@ class Environment():
         ''')
         
     def show_potential(self, frame='auto'):
+        DIM = self.DIM
         if (frame=='auto' and self.reference_frame['rotating']) or (frame=='rotating'):
             omega = self.reference_frame['omegaR'][-1]
             for i in range(DIM):
@@ -74,6 +76,10 @@ class Environment():
         self.lb = np.sqrt(hbar / (2* self.mass *omega))
         self.epsilon = epsilon
         self.omegaz(np.sqrt(8) * omega)
+
+    def custom_potential(self, V):
+        self.V = V
+        self.use_custom_V = True
             
     def omegaz(self, omegaz):
         self._omegaz = omegaz

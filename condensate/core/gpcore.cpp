@@ -38,13 +38,20 @@ void SetHarmonicPotential(double omega, double epsilon) {gpcore::chamber.setHarm
 // Set parameters of a circular edge potential
 void SetEdgePotential(double strength, double radius, double sharpness){gpcore::chamber.setEdgePotential(strength, radius, sharpness);}
 
-// Extract the potential. Todo: import potential, timedependent: make an object, like wavefunction
+// Extract the potential. Todo:  timedependent: make an object, like wavefunction
 void GetPotential(int sizeX, int sizeY, double *V){
   for( unsigned int i=0; i<gpcore::chamber.DS; i++ ) {
     V[i] = gpcore::chamber.Potential[i] / HBAR;
   }
+  gpcore::chamber.setupPotential();
 }
 
+// import potential
+void SetPotential(int sizeX, int sizeY, double *V){
+  for( unsigned int i=0; i<gpcore::chamber.DS; i++ ) {
+    gpcore::chamber.Potential[i] = V[i] * HBAR;
+  }
+}
 // Setup rotating frame with varying rotation freq omegaR. 
 void RotatingFrame(int size, double *omega_r){
   gpcore::chamber.useRotatingFrame = true;

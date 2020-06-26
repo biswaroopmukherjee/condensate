@@ -110,15 +110,9 @@ void Chamber::setHarmonicPotential(double o, double ep) {
 		for( j=0; j<DIM; j++){
 			Potential[(i*DIM + j)] = 0.5 * mass * ( (1-epsilon) * pow(omega * X[(i)], 2) +
 												    (1+epsilon) * pow(omega * Y[(j)], 2) ) ;
-			hostExpPotential[(i*DIM + j)].x = exp( -Potential[(i*DIM + j)] * cooling*dt/(2*HBAR)) *
-											  cos( -Potential[(i*DIM + j)] * useReal*dt/(2*HBAR));
-			hostExpPotential[(i*DIM + j)].y = exp( -Potential[(i*DIM + j)] * cooling*dt/(2*HBAR)) *
-											  sin( -Potential[(i*DIM + j)] * useReal*dt/(2*HBAR));
 		}
 	}
-	// Copy to device
-	checkCudaErrors(cudaMemcpy(devPotential, Potential, sizeof(double) * DS, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
+	Chamber::setupPotential();
 };
 
 // setup for edge potential
@@ -129,6 +123,17 @@ void Chamber::setEdgePotential(double strength, double radius, double sharpness)
 		for( j=0; j<DIM; j++){
 			rfromcenter = pow((pow(X[i],2) + pow(X[j],2)),0.5);
 			Potential[(i*DIM + j)] += strength * 1e-5 * 0.5*mass*( erf( (rfromcenter-radius)/sharpness) +1 );
+		}
+	}
+	
+	Chamber::setupPotential();
+}
+
+// Generic setup for potential: calculate exponentials and transfer to device
+void Chamber::setupPotential() {
+	unsigned int i, j;
+	for( i=0; i<DIM; i++ ){
+		for( j=0; j<DIM; j++){
 			hostExpPotential[(i*DIM + j)].x = exp( -Potential[(i*DIM + j)] * cooling*dt/(2*HBAR)) *
 											  cos( -Potential[(i*DIM + j)] * useReal*dt/(2*HBAR));
 			hostExpPotential[(i*DIM + j)].y = exp( -Potential[(i*DIM + j)] * cooling*dt/(2*HBAR)) *
