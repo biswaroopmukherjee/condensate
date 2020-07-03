@@ -116,3 +116,5 @@ venv.bak/
 *.hdf5
 
 *.mpg
+
+notebooks/core
