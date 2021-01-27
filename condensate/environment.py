@@ -58,6 +58,17 @@ class Environment():
         
     def show_potential(self, frame='auto'):
         DIM = self.DIM
+        fov = self.fov
+        if not self.use_custom_V:
+            for i in range(DIM):
+                for j in range(DIM):
+                    x = (i-DIM//2)*fov / DIM
+                    y = (j-DIM//2)*fov / DIM
+                    rsq = x**2 + y**2
+                    esq = x**2 - y**2
+                    centrif = 0.5 * self.mass * (self.omega**2) * rsq
+                    saddle = 0.5 * self.mass * self.epsilon * (self.omega**2) * esq
+                    self.V[i,j] = ( centrif - saddle)/hbar
         if (frame=='auto' and self.reference_frame['rotating']) or (frame=='rotating'):
             omega = self.reference_frame['omegaR'][-1]
             for i in range(DIM):
