@@ -20,7 +20,7 @@ An overview of the python notebooks:
 
 - The [Vortex Lattices](notebooks/Vortex%20Lattices.ipynb)  notebook is a good starting point with rotating gases.
 - The [Leap motion control](notebooks/Leap%20motion%20control.ipynb) notebook lets you interact with a condensate.
-- Finally, the [gpcore experiments](notebooks/gpcore%20experiments.ipynb) notebook goes into a few experiments I've been trying out, with the bare python bindings.
+<!-- - Finally, the [gpcore experiments](notebooks/gpcore%20experiments.ipynb) notebook goes into a few experiments I've been trying out, with the bare python bindings. -->
 
 In order to run a simple script with an interactive condensate (instead of the notebooks), run `python3 scripts/mousetest.py` from either your docker container or if you have CUDA, directly in your terminal.
 
