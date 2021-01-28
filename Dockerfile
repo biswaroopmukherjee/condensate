@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     swig \
     libglew-dev \
-    freeglut3-dev 
+    freeglut3-dev  \
+    ffmpeg
 
 # Install any needed packages specified in requirements.txt
 RUN python3 -m pip --no-cache-dir install \
@@ -17,9 +18,10 @@ RUN python3 -m pip --no-cache-dir install \
     h5py \
     pandas \ 
     scipy \
+    scikit-image \
     tqdm \ 
     Pillow \
-    jupyter_contrib_nbextensions
+    jupyter_contrib_nbextensions 
 
 RUN jupyter contrib nbextension install --user \
     && jupyter nbextension enable toc2/main
