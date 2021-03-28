@@ -78,6 +78,24 @@ void colormapKernelLauncher(uchar4 *d_out, cuDoubleComplex *devPsi, double scale
 }
 
 
+// Handles display mapping from cuDoubleComplex to RGBA int
+__global__
+void movie_frame(int *d_buffer, cuDoubleComplex *devPsi, double scale, int w, int h) { 
+    const int tidx = blockIdx.x*blockDim.x + threadIdx.x;
+    const int tidy = blockIdx.y*blockDim.y + threadIdx.y;
+    if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
+    const int i = tidx + tidy * w; // 1D indexing
+    double mag = complexMagnitudeSquared(devPsi[i]);
+    uchar4 d_out = viridis(mag/scale);
+    d_buffer[i] = 65536 * d_out.z + 256 * d_out.y + d_out.x;
+}
+
+void movieFrameLauncher(int *d_buffer, cuDoubleComplex *devPsi, double scale, int w, int h) {
+    const dim3 gridSize (iDivUp(w, TILEX), iDivUp(h, TILEY));
+    const dim3 blockSize(TILEX, TILEY);
+    movie_frame<<<gridSize, blockSize>>>(d_buffer, devPsi, scale, w, h);
+}
+
 
 // Multiply the wavefunction with a real-valued scalar
 __global__ 

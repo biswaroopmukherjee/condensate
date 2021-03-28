@@ -45,6 +45,5 @@ RUN cd condensate/core \
 
 EXPOSE 8888
 
-# Run app.py when the container launches
-# CMD ["./build/gp"]
+
 CMD ["bash", "-c", "jupyter notebook --notebook-dir=/gp/notebooks --ip 0.0.0.0 --no-browser --allow-root"]

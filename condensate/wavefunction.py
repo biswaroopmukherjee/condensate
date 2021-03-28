@@ -76,7 +76,7 @@ class Wavefunction():
 
     
     def evolve(self, dt=1e-4, steps=1000, imaginary_time=False, cooling=0.01,
-               showevery=40, show=True, vmax='auto'):
+               showevery=40, show=True, vmax='auto', save_movie=None):
         
         gpcore.Setup(self.env.DIM, self.env.fov, self.env.g, dt, imaginary_time, cooling)
         
@@ -110,5 +110,21 @@ class Wavefunction():
                                    self.env.spoon['zcontrol'])
             
         if vmax=='auto': vmax=np.max(self.density/ self.env.N)
+
+        if save_movie is None:
+            filename = ''
+        elif type(save_movie)==bool:
+            if save_movie:
+                filename = 'output.mp4'
+            else:
+                filename = ''
+        elif type(save_movie)==str:
+            if save_movie=='':
+                filename = ''
+            elif len(save_movie)>4 and save_movie[-4:]=='.mp4':
+                filename = save_movie
+            else:
+                raise ValueError('Please enter a valid filename (eg output.mp4) to save a movie')
+
         
-        gpcore.Evolve(self.Psi, int(steps), int(showevery), show, vmax)
+        gpcore.Evolve(self.Psi, int(steps), int(showevery), show, vmax, filename)
