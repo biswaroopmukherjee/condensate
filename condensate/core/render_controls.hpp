@@ -21,8 +21,8 @@ void click(int button, int updown, int x, int y) {
 void motion(int x, int y) {
     if (clicked)
     {
-        gpcore::chamber.spoon1.pos.x = x/2;
-        gpcore::chamber.spoon1.pos.y = y/2;
+        gpcore::chamber.spoon1.pos.x = x;
+        gpcore::chamber.spoon1.pos.y = y;
     } 
     glutPostRedisplay();
 }

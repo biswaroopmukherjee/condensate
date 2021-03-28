@@ -1,6 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <cstring>
+
+using namespace std;
+
 #include <cuda_runtime.h>
 #include <cufft.h>
 #include <cmath>  
@@ -24,6 +28,22 @@ void Wavefunction::Initialize(cuDoubleComplex *arr)
     checkCudaErrors(cudaMalloc((void **)&devPsi, cudoubleDS));
     checkCudaErrors(cudaMalloc((void **)&devDensity, sizeof(double) * DS));
     checkCudaErrors(cudaMemcpy(devPsi, hostPsi, cudoubleDS, cudaMemcpyHostToDevice));
+
+}
+
+void Wavefunction::InitializeMovie(char *filename)
+{
+    int DS = DIM * DIM;
+    // Create and allocate buffers on the host and the device for movie creation
+    hostMovieBuffer = (int *)malloc(sizeof(int) * DS);
+    checkCudaErrors(cudaMalloc((void **)&devMovieBuffer, sizeof(int)*DS));
+    // Generate the ffmpeg command
+    string sDIM = to_string(DIM);
+    string cmd = "ffmpeg -r 30 -f rawvideo -pix_fmt rgba -s " + sDIM + "x" + sDIM + " -i - "
+                  "-threads 0 -preset fast -y -pix_fmt yuv420p -crf 15 " + filename;
+    const char *ccmd = cmd.c_str();
+
+    ffmpeg = popen(ccmd, "w");
 }
 
 void Wavefunction::Step(double mult)
@@ -36,6 +56,18 @@ void Wavefunction::MapColors(uchar4 *d_out)
 {
     colormapKernelLauncher(d_out, devPsi, gpcore::chamber.cmapscale, DIM, DIM);
 }
+
+void Wavefunction::MovieFrame()
+{
+    int DIM = gpcore::chamber.DIM;
+    int DS = DIM * DIM;
+    movieFrameLauncher(devMovieBuffer, devPsi, gpcore::chamber.cmapscale, DIM, DIM);
+    checkCudaErrors(cudaMemcpy(hostMovieBuffer, devMovieBuffer, sizeof(int)*DS, cudaMemcpyDeviceToHost));
+
+    fwrite(hostMovieBuffer, sizeof(int), DIM*DIM, ffmpeg);
+
+}
+
 
 void Wavefunction::RealSpaceHalfStep() {
     realspaceKernelLauncher(
@@ -133,11 +165,18 @@ void Wavefunction::RotatingFrame(unsigned long timestep, unsigned long steps) {
 
 void Wavefunction::ExportToVariable(cuDoubleComplex *arr)
 {
+    int DIM = gpcore::chamber.DIM;
     int DS = DIM * DIM;
     checkCudaErrors(cudaMemcpy(hostPsi, devPsi, sizeof(cuDoubleComplex) * DS, cudaMemcpyDeviceToHost));
     memcpy(arr, hostPsi, sizeof(cuDoubleComplex) * DS);
 }
 
+void Wavefunction::MovieCleanup()
+{
+    pclose(ffmpeg);
+    free(hostMovieBuffer);
+    checkCudaErrors(cudaFree(devMovieBuffer));
+}
 
 void Wavefunction::Cleanup()
 {

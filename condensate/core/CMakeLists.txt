@@ -11,6 +11,7 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 
+
 # SWIG stuff
 INCLUDE(${SWIG_USE_FILE})
 
@@ -18,7 +19,7 @@ FIND_PACKAGE(PythonLibs)
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/leap)
-find_library(LEAP NAMES Leap PATHS ${CMAKE_SOURCE_DIR}/leap)
+find_library(LEAP_LIBRARY NAMES Leap PATHS ${CMAKE_SOURCE_DIR}/leap)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC"  )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -50,7 +51,11 @@ cuda_add_cufft_to_target(gpcoregpu)
 
 
 target_link_libraries(gpcoregpu 
-    ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${LEAP})
+    ${OPENGL_LIBRARIES}
+    ${GLEW_LIBRARIES} 
+    ${GLUT_LIBRARIES} 
+    ${LEAP_LIBRARY}
+    )
 
 target_include_directories(gpcoregpu PUBLIC
     ${OPENGL_INCLUDE_DIR}

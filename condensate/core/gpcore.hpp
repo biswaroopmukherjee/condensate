@@ -15,7 +15,7 @@ void AbsorbingBoundaryConditions(double strength, double radius);
 void SetupSpoon(double strength, double radius);
 void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy, bool controlstrength);
 void Evolve(int sizeX, int sizeY, cuDoubleComplex *arr, 
-            unsigned long steps, int skip, bool show, double vmax);
+            unsigned long steps, int skip, bool show, double vmax, char *filename);
 
 namespace gpcore 
 {

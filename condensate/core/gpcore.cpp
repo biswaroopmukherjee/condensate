@@ -79,17 +79,18 @@ void SetupLeapMotion(double centerx, double centery, double zoomx, double zoomy,
 
 // evolve the wavefunction
 void Evolve(int sizex, int sizey, cuDoubleComplex *arr, 
-            unsigned long steps, int skip, bool show, double vmax) {
+            unsigned long steps, int skip, bool show, double vmax, char *filename) {
   std::cout << "\nStarting GP..." << std::endl;
-  if (show) {
-    render::startOpenGL();
-    gpcore::chamber.cmapscale = vmax;
-  }
+  gpcore::Psi.Initialize(arr);
+
+  bool movie = std::string(filename).length()>0;
+  if (movie) gpcore::Psi.InitializeMovie(filename);
+
+  if (show) render::startOpenGL();
+  if (show || movie) gpcore::chamber.cmapscale = vmax;
   Controller controller;
 
-  gpcore::Psi.Initialize(arr);
   unsigned long a=0;
-
   while (!gpcore::chamber.stopSim) 
   {
     gpcore::Psi.RealSpaceHalfStep(); 
@@ -99,13 +100,18 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr,
     if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
     if (gpcore::chamber.spoon1.strength != 0) gpcore::chamber.Spoon();
     if (gpcore::chamber.useLeapMotion) LeapControl(controller);
-    if ((a%skip == 0) && show) glutMainLoopEvent();
+    if (a%skip == 0){
+      if (movie) gpcore::Psi.MovieFrame();
+      if (show) glutMainLoopEvent();
+    } ;
     a++;
     if (a==steps) gpcore::chamber.stopSim = true; 
 
    }
+
   
   if (show) render::cleanup();
+  if (movie) gpcore::Psi.MovieCleanup();
   // gpcore::Psi.CalculateEnergy(energy);
   gpcore::Psi.ExportToVariable(arr);
   gpcore::Psi.Cleanup();

@@ -48,6 +48,7 @@ namespace render {
         cudaGraphicsResourceGetMappedPointer((void **)&d_out, NULL, cuda_pbo_resource);
         gpcore::Psi.MapColors(d_out);
         cudaGraphicsUnmapResources(1, &cuda_pbo_resource, 0);
+
         }
 
     void drawTexture() {
@@ -107,7 +108,7 @@ namespace render {
         char *argv[1] = {(char*)"Something"};
         glutInit(&argc, argv);
         glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-        glutInitWindowSize(2*DIM, 2*DIM);
+        glutInitWindowSize(DIM, DIM);
         glutCreateWindow("Compute Stable Fluids");
 
         glutDisplayFunc(display);
