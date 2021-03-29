@@ -100,6 +100,8 @@ class Environment():
     
     def rotating_frame(self, omegaR):
         if type(omegaR)==float: omegaR = [omegaR]
+        if len(omegaR)==0: 
+            raise ValueError('omegaR needs to be a float or a list of length steps')
         self.reference_frame = {'rotating': True, 'omegaR': omegaR}
     
     def lab_frame(self):

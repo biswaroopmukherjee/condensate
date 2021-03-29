@@ -96,12 +96,10 @@ class Wavefunction():
         
         if self.env.reference_frame['rotating']:
             omegaR = self.env.reference_frame['omegaR']
-            if (steps!=0):
-                if type(omegaR)!=list:
-                    omegaR = [omegaR for _ in range(steps)]
-                elif (len(omegaR)!=steps): 
-                    omegaR = [omegaR[0] for _ in range(steps)]
+            if (steps!=0) and (len(omegaR)!=steps): 
+                if len(omegaR)>1:
                     warnings.warn('Rotation frequency list OmegaR is the wrong length (not steps). Using the first element OmegaR[0].')
+                omegaR = [omegaR[0] for _ in range(steps)]
             gpcore.RotatingFrame(omegaR)
         
         if self.env.spoon['type']=='mouse':
