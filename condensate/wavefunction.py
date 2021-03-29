@@ -3,6 +3,7 @@ from copy import copy, deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 from condensate.core import gpcore
+import warnings
 
 
 class Wavefunction():
@@ -95,8 +96,12 @@ class Wavefunction():
         
         if self.env.reference_frame['rotating']:
             omegaR = self.env.reference_frame['omegaR']
-            if (steps!=0) and (len(omegaR)!=steps): 
-                raise ValueError('Check the length of omegaR (it should be steps)')
+            if (steps!=0):
+                if type(omegaR)!=list:
+                    omegaR = [omegaR for _ in range(steps)]
+                elif (len(omegaR)!=steps): 
+                    omegaR = [omegaR[0] for _ in range(steps)]
+                    warnings.warn('Rotation frequency list OmegaR is the wrong length (not steps). Using the first element OmegaR[0].')
             gpcore.RotatingFrame(omegaR)
         
         if self.env.spoon['type']=='mouse':
