@@ -34,7 +34,7 @@ The spirit of this project is to combine rapid experimentation with raw GPU comp
 ## More movies
 
 <p align="center">
-  <!-- <img src="media/edge.gif?raw=true" width="306px" style="padding-right:30px"> -->
+  <img src="media/edge.gif?raw=true" width="306px" style="padding-right:30px">
   
   <img src="media/vlattice.gif?raw=true" width="300px" style="padding-left:30px">
 </p>
