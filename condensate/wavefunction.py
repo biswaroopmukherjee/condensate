@@ -3,6 +3,7 @@ from copy import copy, deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 from condensate.core import gpcore
+from condensate.environment import Environment
 import warnings
 
 
