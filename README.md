@@ -1,5 +1,5 @@
 # condensate
-Interactive GPU-accelerated numerical solutions of the GP equation. Written in C++/CUDA, wrapped in python using SWIG.
+Interactive GPU-accelerated numerical solutions of the Gross-Pitaevskii equation. Written in C++/CUDA, wrapped in python using SWIG.
 
 <p align="center">
   <img src="media/condensate.gif?raw=true" width="600px">
@@ -7,7 +7,12 @@ Interactive GPU-accelerated numerical solutions of the GP equation. Written in C
 
 ## Usage
 
-This project only runs on Linux machines with an NVIDIA GPU. Docker makes it easy to get started. Install [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) (make sure you have the official NVIDIA drivers). Then, run in your terminal
+The easiest way to get started is to use colab.  Here are a few demo notebooks to get started:
+
+- [Squeezing vortex lattices](https://colab.research.google.com/drive/1ysDY1Ilugijps5PBQM3f9L9VIykEol31?usp=sharing)
+- [2D quantum turbulence](https://colab.research.google.com/drive/1zTFOKk6qascOzcBJ8dKgJk-F2zkfz6MC?usp=sharing)
+
+For real time rendering, you need a Linux machine with an NVIDIA GPU. Docker makes everything easy. Install [nvidia-docker](https://github.com/NVIDIA/nvidia-docker) (make sure you have the official NVIDIA drivers). Then, run in your terminal
 
 ```bash
 chmod +x start-condensate.sh
@@ -16,7 +21,7 @@ chmod +x start-condensate.sh
 
 Note: the Leap Motion controller is currently incompatible with Docker. If you want to use the leap motion, replace `docker` with `leap` in the above commands. Leave out the command if you want to build locally without docker or leap. For these options, you need to install CUDA 10.0 or greater, the [V2 Leap motion SDK](https://developer.leapmotion.com/setup/desktop) for Linux, and a few other requirements that can be gleaned from the Dockerfile.
 
-An overview of the python notebooks:
+An overview of the python notebooks inside this repository:
 
 - The [Vortex Lattices](notebooks/Vortex%20Lattices.ipynb)  notebook is a good starting point with rotating gases.
 - The [Leap motion control](notebooks/Leap%20motion%20control.ipynb) notebook lets you interact with a condensate.
@@ -34,7 +39,7 @@ The spirit of this project is to combine rapid experimentation with raw GPU comp
 ## More movies
 
 <p align="center">
-  <!-- <img src="media/edge.gif?raw=true" width="306px" style="padding-right:30px"> -->
+  <img src="media/edge.gif?raw=true" width="306px" style="padding-right:30px">
   
   <img src="media/vlattice.gif?raw=true" width="300px" style="padding-left:30px">
 </p>

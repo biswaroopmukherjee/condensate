@@ -76,7 +76,7 @@ class Environment():
                     x = (i-DIM//2)*fov / DIM
                     y = (j-DIM//2)*fov / DIM
                     rsq = x**2 + y**2
-                    centrif = 0.5 * mass * (omega**2) * rsq
+                    centrif = 0.5 * self.mass * (omega**2) * rsq
                     self.V[i,j] -= centrif/hbar
         a = plt.contour(self.V)
         plt.gca().set_aspect('equal', 'box')
@@ -100,6 +100,9 @@ class Environment():
     
     def rotating_frame(self, omegaR):
         if type(omegaR)==float: omegaR = [omegaR]
+        elif type(omegaR)==int: omegaR = [float(omegaR)]
+        elif type(omegaR)==list and len(omegaR)==0: 
+            raise ValueError('omegaR needs to be a float or a list of length steps')
         self.reference_frame = {'rotating': True, 'omegaR': omegaR}
     
     def lab_frame(self):
