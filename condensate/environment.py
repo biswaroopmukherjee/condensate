@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from condensate.core import gpcore
 
 # constants
-hbar = 1.05e-34
-a0 = 5.3e-11
+hbar = 1.054571817e-34
+a0 = 5.29177210903e-11
 
 class Environment():
     """
@@ -25,7 +25,7 @@ class Environment():
     """
 
 
-    def __init__(self, DIM=512, fov=400e-6, N=1e6, omegaz=10, a_s=100*a0, mass=3.8e-26):
+    def __init__(self, DIM=512, fov=400e-6, N=1e6, omegaz=10, a_s=100*a0, mass=3.8175406e-26):
         self.DIM = DIM
         self.fov = fov
         self.dx = fov/DIM
