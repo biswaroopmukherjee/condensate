@@ -79,6 +79,11 @@ class Wavefunction():
         omega = self.env.omega
         losc = self.env.lb*np.sqrt(2)
         Numv = int(np.round(np.pi*R**2 * 2*omega*m/h))
+        if (Numv > 250):
+            R = R*np.math.sqrt(250/Numv);
+            Numv = int(np.round(np.pi*R**2 * 2*omega*m/h))
+            print("Needed to reduce radius to ", R, "for numerical stability.")
+
         print("Initializing with", Numv, "vortices")
 
         scale = 1.0/DIM*fov/losc
@@ -91,8 +96,10 @@ class Wavefunction():
 
         norm = np.math.sqrt(sum(abs(ccoefs)**2))
 
-        for n in range(0,Numv+1):
-            ccoefs[n] /= np.math.sqrt(np.math.factorial(n))
+        sqfacn = 1.0
+        for n in range(1,Numv+1):
+            sqfacn *= np.math.sqrt(n);
+            ccoefs[n] /= sqfacn
 
         def p(z):
             res = 0
