@@ -112,7 +112,7 @@ class Wavefunction():
 
         for i in range(DIM):
             for j in range(DIM):
-                self.Psi[i,j]  = randompsi(((i-DIM//2) + (j-DIM//2)*1j)*scale)
+                self.Psi[i,j]  = randompsi(((i-DIM//2) - (j-DIM//2)*1j)*scale)
 
     def relax(self, **kwargs):
         kwargs['imaginary_time'] = True
