@@ -115,9 +115,16 @@ class Wavefunction():
     def evolve(self, dt=1e-4, steps=1000, imaginary_time=False, cooling=0.01,
                showevery=40, show=True, vmax='auto', save_movie=None):
 
-        gpcore.Setup(self.env.DIM, self.env.fov, self.env.g, dt, imaginary_time, cooling)
-
-        gpcore.SetHarmonicPotential(self.env.omega, self.env.epsilon)
+        omega = [self.env.omega for _ in range(steps)]
+        epsilon = [self.env.epsilon for _ in range(steps)]
+        if self.env.ramp_trap['ramp'] == True:
+            omega = self.env.ramp_trap['omega']
+            epsilon = self.env.ramp_trap['epsilon']
+            if (steps != 0) and ((len(omega) != steps) or (len(epsilon) != steps)):
+                raise ValueError('The ramp sequence does not match!')
+        
+        gpcore.Setup(self.env.DIM, self.env.fov, self.env.g, dt, imaginary_time, cooling, self.env.ramp_trap['ramp'] )
+        gpcore.SetHarmonicPotential(omega, epsilon)
 
         if self.env.edge['on']:
             gpcore.SetEdgePotential(self.env.edge['strength'], self.env.edge['radius'], self.env.edge['width'])

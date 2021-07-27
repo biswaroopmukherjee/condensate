@@ -28,12 +28,21 @@ namespace gpcore {
 }
 
 // Set the spatial grid size of the system
-void Setup(int size, double fov, double g, double deltat, bool useImag, double cool) {
-  gpcore::chamber.setup(size, fov, g, deltat, useImag, cool);
+void Setup(int size, double fov, double g, double deltat, bool useImag, double cool, bool every_time_reset_potential) {
+  gpcore::chamber.setup(size, fov, g, deltat, useImag, cool, every_time_reset_potential);
 }
 
 // Set the parameters of the harmonic potential, and use that as the current potential
-void SetHarmonicPotential(double omega, double epsilon) {gpcore::chamber.setHarmonicPotential(omega, epsilon);}
+void SetHarmonicPotential(int size_o, double *omega_t, int size_e, double *epsilon_t) {
+    int size = size_o;
+    gpcore::chamber.omega = (double *) malloc(sizeof(double) * size);
+    gpcore::chamber.epsilon = (double *) malloc(sizeof(double) * size);
+    for( unsigned int i=0; i<size; i++ ) {
+    gpcore::chamber.omega[i] = omega_t[i];
+    gpcore::chamber.epsilon[i] = epsilon_t[i];
+    }
+    gpcore::chamber.setHarmonicPotential(omega_t[0], epsilon_t[0]);
+}
 
 // Set parameters of a circular edge potential
 void SetEdgePotential(double strength, double radius, double sharpness){gpcore::chamber.setEdgePotential(strength, radius, sharpness);}
@@ -97,6 +106,7 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr,
     gpcore::Psi.MomentumSpaceStep();
     gpcore::Psi.RealSpaceHalfStep();
     if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a, steps);
+    if (gpcore::chamber.every_time_reset_potential && (a != 0)) gpcore::chamber.TimeVary(a);
     if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
     if (gpcore::chamber.spoon1.strength != 0) gpcore::chamber.Spoon();
     if (gpcore::chamber.useLeapMotion) LeapControl(controller);

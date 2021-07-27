@@ -42,6 +42,8 @@ class Environment():
         self.V = np.zeros((DIM,DIM))
         self.use_custom_V= False
         
+        # when doing dynamics with time varying harmonic trap, the ramp_trap is useful, but the g will not change,
+        self.ramp_trap = {'ramp': False, 'omega': [self.omega], 'epsilon': [self.epsilon]}
         self.reference_frame = {'rotating': False, 'omegaR': [self.omega]}
         self.absorber = {'on': False, 'strength': 1, 'radius': self.fov/2}
         self.edge = {'on': False, 'strength': 5, 'radius': self.fov/2, 'width':self.fov/20}
@@ -83,10 +85,22 @@ class Environment():
         plt.show()
         
     def harmonic_potential(self, omega, epsilon=0):
-        self.omega = omega
-        self.lb = np.sqrt(hbar / (2* self.mass *omega))
-        self.epsilon = epsilon
-        self.omegaz(np.sqrt(8) * omega)
+        if type(omega) == list and len(omega) != 0 and type(epsilon) == list and len(epsilon) != 0:
+            if len(omega) != len(epsilon):
+                raise ValueError('Unmatching the ramp sequence of omega and epsilon')
+            self.omega = omega[0]
+            self.epsilon = epsilon[0]
+            self.lb = np.sqrt(hbar / (2* self.mass *omega[0]))
+            self.omegaz(np.sqrt(8) * omega[0])
+            self.ramp_trap = {'ramp': True, 'omega': omega, 'epsilon': epsilon}
+        elif ((type(omega) == float) or (type(omega) == int)) and ((type(epsilon) == float) or (type(epsilon) == int)):
+            self.omega = omega
+            self.lb = np.sqrt(hbar / (2* self.mass *omega))
+            self.epsilon = epsilon
+            self.omegaz(np.sqrt(8) * omega)
+            self.ramp_trap = {'ramp': False, 'omega': [self.omega], 'epsilon': [self.epsilon]}
+        else:
+            raise ValueError('omega and epsilon messed up')
 
     def custom_potential(self, V):
         self.V = V
