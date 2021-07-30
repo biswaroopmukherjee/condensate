@@ -143,6 +143,37 @@ void realspaceKernelLauncher(cuDoubleComplex *devPsi, cuDoubleComplex *devExpPot
     realevolve_psi<<<gridSize, blockSize>>>(devPsi, devExpPotential, out, g, dt, useReal, cooling, w, h);
 }
 
+// Time Varying Harmonic Potential
+__global__
+void timevary_potential(cuDoubleComplex *devExpPotential, cuDoubleComplex *out, 
+                        double *devXX, double *devYY, double mass, double o_0, double ep_0, 
+                        double o, double ep, double dt, double useReal, double cooling, int w, int h) {
+    const int tidx = blockIdx.x*blockDim.x + threadIdx.x;
+    const int tidy = blockIdx.y*blockDim.y + threadIdx.y;
+    if ((tidx >= w) || (tidy >= h)) return; // Check if in bounds
+    const int i = tidx + tidy * w; // 1D indexing
+
+    double coeff_x = 0.5 * mass * ((1-ep) * pow(o, 2) - (1-ep_0) * pow(o_0, 2));
+    double coeff_y = 0.5 * mass * ((1+ep) * pow(o, 2) - (1+ep_0) * pow(o_0, 2));
+    double potential = (coeff_x * devXX[i] + coeff_y * devYY[i]) * (dt / (2*HBAR));
+    cuDoubleComplex exp_potential;
+    exp_potential.x = exp( -potential * cooling) * cos( -potential * useReal);
+    exp_potential.y = exp( -potential * cooling) * sin( -potential * useReal);
+    cuDoubleComplex exp_potential_0 = devExpPotential[i];
+    cuDoubleComplex exp_pot_dt;
+    exp_pot_dt.x = exp_potential.x * exp_potential_0.x - exp_potential.y * exp_potential_0.y;
+    exp_pot_dt.y = exp_potential.y * exp_potential_0.x + exp_potential.x * exp_potential_0.y;
+    out[i] = exp_pot_dt;
+}
+
+void timevaryingKernelLauncher(cuDoubleComplex *devExpPotential, cuDoubleComplex *out, 
+                                double *devXX, double *devYY, double mass, double o_0, double ep_0, 
+                                double o, double ep, double dt, double useReal, double cooling, int w, int h) {
+    const dim3 gridSize (iDivUp(w, TILEX), iDivUp(h, TILEY));
+    const dim3 blockSize(TILEX, TILEY);
+    timevary_potential<<<gridSize, blockSize>>>(devExpPotential, out, devXX, devYY, mass, o_0, ep_0, o, ep, dt, useReal, cooling, w, h);
+}
+
 
 // Momentum Space evolution 
 __global__
