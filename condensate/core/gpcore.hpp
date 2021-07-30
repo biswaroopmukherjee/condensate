@@ -5,8 +5,8 @@
 #include "chamber.hpp"
 
 
-void Setup(int size, double fov, double g, double deltat, bool useImag, double cool);
-void SetHarmonicPotential(double omega, double epsilon);
+void Setup(int size, double fov, int size_g, double *g, double deltat, bool useImag, double cool, bool every_time_reset_potential);
+void SetHarmonicPotential(int size_o, double *omega_t, int size_e, double *epsilon_t);
 void SetEdgePotential(double strength, double radius, double sharpness);
 void GetPotential(int vsizeX, int vsizeY, double *V);
 void SetPotential(int vsizeX, int vsizeY, double *V);

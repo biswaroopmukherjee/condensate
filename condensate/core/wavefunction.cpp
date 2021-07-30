@@ -69,12 +69,12 @@ void Wavefunction::MovieFrame()
 }
 
 
-void Wavefunction::RealSpaceHalfStep() {
+void Wavefunction::RealSpaceHalfStep(int timestep) {
     realspaceKernelLauncher(
                     devPsi, 
                     gpcore::chamber.devExpPotential, 
                     devPsi, 
-                    gpcore::chamber.g,
+                    gpcore::chamber.g[timestep],
                     gpcore::chamber.dt,
                     gpcore::chamber.useReal,
                     gpcore::chamber.cooling,

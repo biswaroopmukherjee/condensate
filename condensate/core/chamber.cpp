@@ -13,7 +13,7 @@
 
 
 // setup for the size of the grid, the kinetic part, and other parameters
-void Chamber::setup(int size, double fovinput, double ginput, double deltat, bool useImag, double cool) {
+void Chamber::setup(int size, double fovinput, int size_g, double *ginput, double deltat, bool useImag, double cool, bool reset) {
     DIM = size;
     DS = DIM*DIM;
 	dt = deltat;
@@ -33,12 +33,16 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	kX = (double *) malloc(doubleDIM);
 	kY = (double *) malloc(doubleDIM);
 
-	g = ginput;
+	g = (double *) malloc(sizeof(double) * size_g);
+	for (int i_g = 0; i_g < size_g; ++i_g) {
+		g[i_g] = ginput[i_g];
+	}
 	mass = 3.8e-26; //Rb 87 mass, kg
 	fov = fovinput/2;
 	kfov = (PI/fov)*(DIM>>1);
     dx = fov/(DIM>>1);
     dk = PI/(fov);
+	every_time_reset_potential = reset;
     
 	unsigned int i, j; 
     for(i=0; i<DIM/2; ++i){
@@ -62,6 +66,8 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	Kinetic   = (double *) malloc(doubleDS);
     XkY = (double *) malloc(doubleDS);
 	YkX = (double *) malloc(doubleDS);
+	XX = (double *) malloc(doubleDS);
+	YY = (double *) malloc(doubleDS);
 	hostExpKinetic   = (cuDoubleComplex *) malloc(cudoubleDS);
 	hostExpPotential = (cuDoubleComplex *) malloc(cudoubleDS);
     
@@ -70,6 +76,8 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	cudaMalloc((void**) &devExpKinetic, cudoubleDS);
 	cudaMalloc((void**) &devXkY, doubleDS);
 	cudaMalloc((void**) &devYkX, doubleDS);
+	cudaMalloc((void**) &devXX, doubleDS);
+	cudaMalloc((void**) &devYY, doubleDS);
 	cudaMalloc((void**) &devExpXkY, cudoubleDS);
 	cudaMalloc((void**) &devExpYkX, cudoubleDS);
 	
@@ -90,6 +98,9 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 			XkY[(i*DIM + j)] =  X[i]*kY[j];
 			YkX[(i*DIM + j)] = -Y[j]*kY[i];
 
+			XX[(i*DIM + j)] = X[i]*X[i];
+			YY[(i*DIM + j)] = Y[j]*Y[j];
+
 		}
 	}
 
@@ -97,19 +108,18 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
     checkCudaErrors(cudaMemcpy(devExpKinetic, hostExpKinetic, cudoubleDS, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(devXkY, XkY, doubleDS, cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(devYkX, YkX, doubleDS, cudaMemcpyHostToDevice));
-
+	checkCudaErrors(cudaMemcpy(devXX, XX, doubleDS, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(devYY, YY, doubleDS, cudaMemcpyHostToDevice));
 
 }
 
 // setup for harmonic potential: todo: move to separate objects
 void Chamber::setHarmonicPotential(double o, double ep) {
-    omega = o;
-	epsilon = ep;
 	unsigned int i, j;
 	for( i=0; i<DIM; i++ ){
 		for( j=0; j<DIM; j++){
-			Potential[(i*DIM + j)] = 0.5 * mass * ( (1-epsilon) * pow(omega * X[(i)], 2) +
-												    (1+epsilon) * pow(omega * Y[(j)], 2) ) ;
+			Potential[(i*DIM + j)] = 0.5 * mass * ( (1-ep) * pow(o * X[(i)], 2) +
+												    (1+ep) * pow(o * Y[(j)], 2) ) ;
 		}
 	}
 	Chamber::setupPotential();
@@ -145,6 +155,19 @@ void Chamber::setupPotential() {
     checkCudaErrors(cudaMemcpy(devExpPotential, hostExpPotential, sizeof(cuDoubleComplex) * DS, cudaMemcpyHostToDevice));
 }
 
+void Chamber::differencePotential(double o1, double o2, double ep1, double ep2) {
+	unsigned int i, j;
+	double diff_x = 0.5*mass*(-(1-ep1) * pow(o1,2) + (1-ep2) * pow(o2,2));
+	double diff_y = 0.5*mass*(-(1+ep1) * pow(o1,2) + (1+ep2) * pow(o2,2));
+	for( i=0; i<DIM; i++ ){
+		for( j=0; j<DIM; j++){
+			//Potential[(i*DIM + j)] += 0.5 * mass * ((-(1-ep1) * pow(o1,2) + (1-ep2) * pow(o2,2)) * pow(X[i], 2) + (-(1+ep1) * pow(o1,2) + (1+ep2) * pow(o2,2)) * pow(Y[j], 2));
+			Potential[(i*DIM + j)] += diff_x * pow(X[i], 2) + diff_y * pow(Y[j], 2);
+		}
+	}
+	Chamber::setupPotential();
+}
+
 // ABC at some radius
 void Chamber::AbsorbingBoundaryConditions(double strength, double radius) {
 	unsigned int i, j;
@@ -172,6 +195,10 @@ void Chamber::SetupSpoon(double strength, double radius) {
 
 void Chamber::Spoon() {
     spoonKernelLauncher(devPotential, devExpPotential, spoon1, dt, useReal, cooling, DIM, DIM); // kernel to rewrite spoon and devexppotential
+}
+
+void Chamber::TimeVary(int step_idx) {
+	timevaryingKernelLauncher(devExpPotential, devExpPotential, devXX, devYY, mass, omega[step_idx-1], epsilon[step_idx-1], omega[step_idx], epsilon[step_idx], dt, useReal, cooling, DIM, DIM);
 }
 
 void Chamber::Cleanup()
