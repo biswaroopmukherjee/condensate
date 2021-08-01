@@ -61,15 +61,15 @@ class Wavefunction():
 
     def initialize_Psi(self, width=100, vortexnumber=0):
         DIM = self.env.DIM
-        x = (1+0.j)*np.zeros((DIM,DIM))
         for i in range(DIM):
             for j in range(DIM):
                 phase = 1
                 if vortexnumber:
                     phi = vortexnumber * np.arctan2((i-DIM//2), (j-DIM//2))
                     phase = np.exp(1.j * np.mod(phi,2*np.pi))
-                self.Psi[i,j] = np.exp(-( (i-DIM//2)/width)** 2.  -  ((j-DIM//2)/width)** 2. ) + 1.j
+                self.Psi[i,j] = np.exp(-( (i-DIM//2)/width)** 2.  -  ((j-DIM//2)/width)** 2. )
                 self.Psi[i,j] *= phase
+		self.Psi = self.Psi.astype(complex)               
         
      
     def relax(self, **kwargs):
