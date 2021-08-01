@@ -69,7 +69,8 @@ class Wavefunction():
                     phase = np.exp(1.j * np.mod(phi,2*np.pi))
                 self.Psi[i,j] = np.exp(-( (i-DIM//2)/width)** 2.  -  ((j-DIM//2)/width)** 2. )
                 self.Psi[i,j] *= phase
-	self.Psi = self.Psi.astype(complex)               
+                
+        self.Psi = self.Psi.astype(complex)               
         
      
     def relax(self, **kwargs):
