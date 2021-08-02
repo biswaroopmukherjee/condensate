@@ -44,6 +44,7 @@ class Environment():
         
         # when doing dynamics with time varying harmonic trap, the ramp_trap is useful, but the g will not change,
         self.ramp_trap = {'ramp': False, 'omega': [self.omega], 'epsilon': [self.epsilon]}
+        self.ramp_scattering_length = {'ramp': False, 'g': [self.g]}
         self.reference_frame = {'rotating': False, 'omegaR': [self.omega]}
         self.absorber = {'on': False, 'strength': 1, 'radius': self.fov/2}
         self.edge = {'on': False, 'strength': 5, 'radius': self.fov/2, 'width':self.fov/20}
@@ -101,6 +102,22 @@ class Environment():
             self.ramp_trap = {'ramp': False, 'omega': [self.omega], 'epsilon': [self.epsilon]}
         else:
             raise ValueError('omega and epsilon messed up')
+
+    def Feshbach(self, a_s=100*a0):
+        if type(a_s) == list and len(a_s) != 0:
+            self.a_s = a_s[0]
+            self.g = self.N* 4 * np.pi * (hbar**2) * (a_s[0]  / self.mass)
+            self.g *= np.sqrt(self.mass * self._omegaz / (2*np.pi*hbar))
+            g_array = self.N* 4 * np.pi * (hbar**2) * (np.array(a_s)  / self.mass)
+            g_array *= np.sqrt(self.mass * self._omegaz / (2*np.pi*hbar))
+            self.ramp_scattering_length = {'ramp': True, 'g': g_array.tolist()}
+        elif type(a_s) == int or type(a_s) == float:
+            self.a_s = a_s
+            self.g = self.N* 4 * np.pi * (hbar**2) * (a_s  / self.mass)
+            self.g *= np.sqrt(self.mass * self._omegaz / (2*np.pi*hbar))
+            self.ramp_scattering_length = {'ramp': False, 'g': [self.g]}
+        else:
+            raise ValueError('Feshbach receives number or list as s-wave scattering length!')
 
     def custom_potential(self, V):
         self.V = V

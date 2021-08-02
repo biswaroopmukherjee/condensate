@@ -15,7 +15,7 @@ class Wavefunction
         void Initialize( cuDoubleComplex *arr);
         void InitializeMovie(char *filename);
         void Step( double mult);
-        void RealSpaceHalfStep();
+        void RealSpaceHalfStep(int timestep);
         void MomentumSpaceStep();
         void Renormalize();
         void RotatingFrame(unsigned long timestep, unsigned long steps);

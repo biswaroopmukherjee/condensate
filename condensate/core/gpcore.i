@@ -20,6 +20,7 @@ import_array();
 %apply (int DIM1, double* IN_ARRAY1) {(int size, double *omega_r)};
 %apply (int DIM1, double* IN_ARRAY1) {(int size_o, double *omega_t)};
 %apply (int DIM1, double* IN_ARRAY1) {(int size_e, double *epsilon_t)};
+%apply (int DIM1, double* IN_ARRAY1) {(int size_g, double *g)};
 
 %include "gpcore.hpp"
 

@@ -13,7 +13,8 @@
 
 
 // setup for the size of the grid, the kinetic part, and other parameters
-void Chamber::setup(int size, double fovinput, double ginput, double deltat, bool useImag, double cool, bool reset) {
+
+void Chamber::setup(int size, double fovinput, int size_g, double *ginput, double deltat, bool useImag, double cool, bool reset) {
     DIM = size;
     DS = DIM*DIM;
 	dt = deltat;
@@ -33,7 +34,10 @@ void Chamber::setup(int size, double fovinput, double ginput, double deltat, boo
 	kX = (double *) malloc(doubleDIM);
 	kY = (double *) malloc(doubleDIM);
 
-	g = ginput;
+	g = (double *) malloc(sizeof(double) * size_g);
+	for (int i_g = 0; i_g < size_g; ++i_g) {
+		g[i_g] = ginput[i_g];
+	}
 	mass = 3.8e-26; //Rb 87 mass, kg
 	fov = fovinput/2;
 	kfov = (PI/fov)*(DIM>>1);

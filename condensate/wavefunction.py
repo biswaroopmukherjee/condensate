@@ -129,8 +129,14 @@ class Wavefunction():
             epsilon = self.env.ramp_trap['epsilon']
             if (steps != 0) and ((len(omega) != steps) or (len(epsilon) != steps)):
                 raise ValueError('The ramp sequence does not match!')
+
+        g = [self.env.g for _ in range(steps)]
+        if self.env.ramp_scattering_length['ramp'] == True:
+            g = self.env.ramp_scattering_length['g']
+            if (steps != 0) and (len(g) != steps):
+                raise ValueError('The ramp sequanece deos not match!')
         
-        gpcore.Setup(self.env.DIM, self.env.fov, self.env.g, dt, imaginary_time, cooling, self.env.ramp_trap['ramp'] )
+        gpcore.Setup(self.env.DIM, self.env.fov, g, dt, imaginary_time, cooling, self.env.ramp_trap['ramp'] )
         gpcore.SetHarmonicPotential(omega, epsilon)
 
         if self.env.edge['on']:

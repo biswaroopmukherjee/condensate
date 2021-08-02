@@ -25,7 +25,7 @@ class Chamber
         double *X, *Y, *kX, *kY;
         double dx, dy, dk, dt;
         double fov, kfov;
-        double *omega, *epsilon, g;
+        double *omega, *epsilon, *g;
         double mass;
         double cooling, useReal;
         double cmapscale;
@@ -39,7 +39,7 @@ class Chamber
 
 
         
-        void setup(int size, double fov, double g, double deltat, bool useImag, double cool, bool every_time_reset_potential);
+        void setup(int size, double fov, int size_g, double *g, double deltat, bool useImag, double cool, bool every_time_reset_potential);
         void setHarmonicPotential(double o, double ep);
         void differencePotential(double o1, double o2, double ep1, double ep2);
         void setEdgePotential(double strength, double radius, double sharpness);

@@ -28,8 +28,8 @@ namespace gpcore {
 }
 
 // Set the spatial grid size of the system
-void Setup(int size, double fov, double g, double deltat, bool useImag, double cool, bool every_time_reset_potential) {
-  gpcore::chamber.setup(size, fov, g, deltat, useImag, cool, every_time_reset_potential);
+void Setup(int size, double fov, int size_g, double *g, double deltat, bool useImag, double cool, bool every_time_reset_potential) {
+  gpcore::chamber.setup(size, fov, size_g, g, deltat, useImag, cool, every_time_reset_potential);
 }
 
 // Set the parameters of the harmonic potential, and use that as the current potential
@@ -102,9 +102,9 @@ void Evolve(int sizex, int sizey, cuDoubleComplex *arr,
   unsigned long a=0;
   while (!gpcore::chamber.stopSim) 
   {
-    gpcore::Psi.RealSpaceHalfStep(); 
+    gpcore::Psi.RealSpaceHalfStep(a); 
     gpcore::Psi.MomentumSpaceStep();
-    gpcore::Psi.RealSpaceHalfStep();
+    gpcore::Psi.RealSpaceHalfStep(a);
     if (gpcore::chamber.useRotatingFrame) gpcore::Psi.RotatingFrame(a, steps);
     if (gpcore::chamber.every_time_reset_potential && (a != 0)) gpcore::chamber.TimeVary(a);
     if (gpcore::chamber.useImaginaryTime || (gpcore::chamber.cooling!=0)) gpcore::Psi.Renormalize();
