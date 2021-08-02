@@ -62,7 +62,8 @@ class Environment():
     def show_potential(self, frame='auto'):
         DIM = self.DIM
         fov = self.fov
-        if not self.use_custom_V:
+        plotV = self.V * 1.
+        if not self.use_custom_V: # Harmonic potential
             for i in range(DIM):
                 for j in range(DIM):
                     x = (i-DIM//2)*fov / DIM
@@ -71,17 +72,18 @@ class Environment():
                     esq = x**2 - y**2
                     centrif = 0.5 * self.mass * (self.omega**2) * rsq
                     saddle = 0.5 * self.mass * self.epsilon * (self.omega**2) * esq
-                    self.V[i,j] = ( centrif - saddle)/hbar
-        if (frame=='auto' and self.reference_frame['rotating']) or (frame=='rotating'):
-            omega = self.reference_frame['omegaR'][-1]
-            for i in range(DIM):
-                for j in range(DIM):
-                    x = (i-DIM//2)*fov / DIM
-                    y = (j-DIM//2)*fov / DIM
-                    rsq = x**2 + y**2
-                    centrif = 0.5 * self.mass * (omega**2) * rsq
-                    self.V[i,j] -= centrif/hbar
-        a = plt.contour(self.V)
+                    plotV[i,j] = ( centrif - saddle)/hbar
+        else:
+            if (frame=='auto' and self.reference_frame['rotating']) or (frame=='rotating'):
+                omega = self.reference_frame['omegaR'][-1]
+                for i in range(DIM):
+                    for j in range(DIM):
+                        x = (i-DIM//2)*fov / DIM
+                        y = (j-DIM//2)*fov / DIM
+                        rsq = x**2 + y**2
+                        centrif = 0.5 * self.mass * (omega**2) * rsq
+                        plotV[i,j] -= centrif/hbar
+        a = plt.contour(plotV)
         plt.gca().set_aspect('equal', 'box')
         plt.show()
         
