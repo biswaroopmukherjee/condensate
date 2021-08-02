@@ -44,3 +44,6 @@ The spirit of this project is to combine rapid experimentation with raw GPU comp
   <img src="media/vlattice.gif?raw=true" width="300px" style="padding-left:30px">
 </p>
 
+## Development
+
+For testing a branch, open the testing notebook under notebooks. You can run the notebook locally or on colab. On colab, go to File/Open notebook. Under 'GitHub' type in the URL of this repository. The testing notebook should be visible in the list. Feel free to add more rigorous tests - this will prevent things from breaking.
