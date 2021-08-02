@@ -13,6 +13,7 @@
 
 
 // setup for the size of the grid, the kinetic part, and other parameters
+
 void Chamber::setup(int size, double fovinput, int size_g, double *ginput, double deltat, bool useImag, double cool, bool reset) {
     DIM = size;
     DS = DIM*DIM;
