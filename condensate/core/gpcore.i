@@ -18,6 +18,9 @@ import_array();
 %apply (int DIM1, int DIM2, cuDoubleComplex* INPLACE_ARRAY2) {(int sizeX, int sizeY, cuDoubleComplex *arr)};
 %apply (int DIM1, int DIM2, double* INPLACE_ARRAY2) {(int vsizeX, int vsizeY, double *V)};
 %apply (int DIM1, double* IN_ARRAY1) {(int size, double *omega_r)};
+%apply (int DIM1, double* IN_ARRAY1) {(int size_o, double *omega_t)};
+%apply (int DIM1, double* IN_ARRAY1) {(int size_e, double *epsilon_t)};
+%apply (int DIM1, double* IN_ARRAY1) {(int size_g, double *g)};
 
 %include "gpcore.hpp"
 
