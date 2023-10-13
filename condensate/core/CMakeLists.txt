@@ -4,6 +4,13 @@
 cmake_minimum_required(VERSION 3.10)
 project (gpcore)
 
+# The following is needed (as a workaround) as cmake policies have changed
+# CMP0146 is because the FindCUDA module is removed in cmake starting 3.10
+cmake_policy(SET CMP0146 OLD)
+
+# CMP0072 is because FindOpenGL prefers GLVND by default when available.
+cmake_policy(SET CMP0072 OLD)
+
 # packages
 find_package(CUDA REQUIRED)
 find_package(SWIG REQUIRED)
